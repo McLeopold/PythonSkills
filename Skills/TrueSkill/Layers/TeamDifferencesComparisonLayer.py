@@ -1,5 +1,4 @@
 from Skills.TrueSkill.Layers.TrueSkillFactorGraphLayer import TrueSkillFactorGraphLayer
-from Skills.TrueSkill.DrawMargin import DrawMargin
 from Skills.TrueSkill.Factors.GaussianWithinFactor import GaussianWithinFactor
 from Skills.TrueSkill.Factors.GaussianGreaterThanFactor import GaussianGreaterThanFactor
 
@@ -9,8 +8,8 @@ class TeamDifferencesComparisonLayer(TrueSkillFactorGraphLayer):
         TrueSkillFactorGraphLayer.__init__(self, parent_graph)
         self.team_ranks = team_ranks
         game_info = parent_graph.game_info
-        self.epsilon = DrawMargin.draw_margin_from_draw_probability(game_info.draw_probability,
-                                                                    game_info.beta)
+        self.epsilon = game_info.draw_margin
+
     def build_layer(self):
         for i in range(len(self.input_variables_groups)):
             is_draw = self.team_ranks[i] == self.team_ranks[i + 1]

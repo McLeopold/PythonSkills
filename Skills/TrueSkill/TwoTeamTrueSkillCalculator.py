@@ -1,6 +1,5 @@
 from Skills.SkillCalculator import SkillCalculator
 from Skills.Numerics.Range import Range
-from Skills.TrueSkill.DrawMargin import DrawMargin
 from Skills.TrueSkill.TruncatedGaussianCorrectionFunctions import TruncatedGaussianCorrectionFunctions
 from Skills.Rating import Rating
 from Skills.Team import Team
@@ -17,22 +16,15 @@ class TwoTeamTrueSkillCalculator(SkillCalculator):
 
     def calculate_new_ratings(self, game_info, teams):
         self.validate_team_count_and_players_count_per_team(teams)
-
         teams.sort()
 
-        results = Teams()
-
-        results.append(self.update_player_ratings(game_info, teams[0], teams[1],
-                                                  teams.comparison()))
-        results.append(self.update_player_ratings(game_info, teams[1], teams[0],
-                                                  teams.comparison(False)))
-
-        return results
+        return Teams(self.update_player_ratings(game_info, teams[0], teams[1],
+                                                teams.comparison()),
+                     self.update_player_ratings(game_info, teams[1], teams[0],
+                                                teams.comparison(False)))
 
     def update_player_ratings(self, game_info, self_team, other_team,
                               self_to_other_team_comparison):
-        draw_margin = DrawMargin.draw_margin_from_draw_probability(game_info.draw_probability, game_info.beta)
-
         beta_squared = game_info.beta ** 2
         tau_squared = game_info.dynamics_factor ** 2
 
@@ -54,12 +46,12 @@ class TwoTeamTrueSkillCalculator(SkillCalculator):
         mean_delta = winning_mean - losing_mean
 
         if self_to_other_team_comparison != Teams.DRAW:
-            v = TruncatedGaussianCorrectionFunctions.v_exceeds_margin_scaled(mean_delta, draw_margin, c)
-            w = TruncatedGaussianCorrectionFunctions.w_exceeds_margin_scaled(mean_delta, draw_margin, c)
+            v = TruncatedGaussianCorrectionFunctions.v_exceeds_margin_scaled(mean_delta, game_info.draw_margin, c)
+            w = TruncatedGaussianCorrectionFunctions.w_exceeds_margin_scaled(mean_delta, game_info.draw_margin, c)
             rank_multiplier = 1.0 * self_to_other_team_comparison
         else:
-            v = TruncatedGaussianCorrectionFunctions.v_within_margin_scaled(mean_delta, draw_margin, c)
-            w = TruncatedGaussianCorrectionFunctions.w_within_margin_scaled(mean_delta, draw_margin, c)
+            v = TruncatedGaussianCorrectionFunctions.v_within_margin_scaled(mean_delta, game_info.draw_margin, c)
+            w = TruncatedGaussianCorrectionFunctions.w_within_margin_scaled(mean_delta, game_info.draw_margin, c)
             rank_multiplier = 1.0
 
         new_player_ratings = Team()

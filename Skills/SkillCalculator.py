@@ -24,12 +24,10 @@ class SkillCalculator():
 
     @staticmethod
     def validate_team_count_and_players_count_per_team_with_ranges(teams, total_teams, players_per_team):
-        count_of_teams = 0
-        for current_team in teams:
-            if len(current_team) not in players_per_team:
-                raise SkillCalculatorError("player count is not in range")
         if len(teams) not in total_teams:
             raise SkillCalculatorError("team range is not in range")
+        if any(len(team) not in players_per_team for team in teams):
+            raise SkillCalculatorError("player count is not in range")
 
 class SkillCalculatorSupportedOptions():
     NONE = 0

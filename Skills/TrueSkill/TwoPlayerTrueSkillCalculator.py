@@ -1,6 +1,5 @@
 from Skills.SkillCalculator import SkillCalculator
 from Skills.Numerics.Range import Range
-from Skills.TrueSkill.DrawMargin import DrawMargin
 from Skills.TrueSkill.TruncatedGaussianCorrectionFunctions import TruncatedGaussianCorrectionFunctions
 from Skills.Rating import Rating
 from Skills.Team import Team
@@ -39,7 +38,6 @@ class TwoPlayerTrueSkillCalculator(SkillCalculator):
         return results
 
     def calculate_new_rating(self, game_info, self_rating, opponent_rating, comparison):
-        draw_margin = DrawMargin.draw_margin_from_draw_probability(game_info.draw_probability, game_info.beta)
         c = sqrt(
             self_rating.stdev ** 2.0 +
             opponent_rating.stdev ** 2.0 +
@@ -56,12 +54,12 @@ class TwoPlayerTrueSkillCalculator(SkillCalculator):
         mean_delta = winning_mean - losing_mean
 
         if comparison != Teams.DRAW:
-            v = TruncatedGaussianCorrectionFunctions.v_exceeds_margin_scaled(mean_delta, draw_margin, c)
-            w = TruncatedGaussianCorrectionFunctions.w_exceeds_margin_scaled(mean_delta, draw_margin, c)
+            v = TruncatedGaussianCorrectionFunctions.v_exceeds_margin_scaled(mean_delta, game_info.draw_margin, c)
+            w = TruncatedGaussianCorrectionFunctions.w_exceeds_margin_scaled(mean_delta, game_info.draw_margin, c)
             rank_multiplier = float(comparison)
         else:
-            v = TruncatedGaussianCorrectionFunctions.v_within_margin_scaled(mean_delta, draw_margin, c)
-            w = TruncatedGaussianCorrectionFunctions.w_within_margin_scaled(mean_delta, draw_margin, c)
+            v = TruncatedGaussianCorrectionFunctions.v_within_margin_scaled(mean_delta, game_info.draw_margin, c)
+            w = TruncatedGaussianCorrectionFunctions.w_within_margin_scaled(mean_delta, game_info.draw_margin, c)
             rank_multiplier = 1.0
 
         mean_multiplier = (self_rating.stdev ** 2.0 + game_info.dynamics_factor ** 2.0) / c
