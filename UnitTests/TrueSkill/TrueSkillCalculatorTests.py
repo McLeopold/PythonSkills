@@ -49,10 +49,11 @@ class TrueSkillCalculatorTests(unittest.TestCase):
 
     def twoPlayerTestNotDrawn(self, calculator):
         game_info = GameInfo()
-        teams = Teams([(1, (25.0, 25.0 / 3))],
-                      [(2, (25.0, 25.0 / 3))])
+        teams = Teams.FreeForAll((1, (25.0, 25.0 / 3)),
+                                 (2, (25.0, 25.0 / 3)),
+                                 rank=[1, 2])
 
-        new_ratings = calculator.calculate_new_ratings(game_info, teams, [1, 2])
+        new_ratings = calculator.calculate_new_ratings(game_info, teams)
 
         self.assertMatchQuality(0.447214, calculator.calculate_match_quality(game_info, teams))
 
@@ -62,9 +63,10 @@ class TrueSkillCalculatorTests(unittest.TestCase):
     def twoPlayerTestDraw(self, calculator):
         game_info = GameInfo()
         teams = Teams([(1, (25.0, 25.0 / 3))],
-                      [(2, (25.0, 25.0 / 3))])
+                      [(2, (25.0, 25.0 / 3))],
+                      rank=[1, 1])
 
-        new_ratings = calculator.calculate_new_ratings(game_info, teams, [1, 1])
+        new_ratings = calculator.calculate_new_ratings(game_info, teams)
 
         self.assertMatchQuality(0.447, calculator.calculate_match_quality(game_info, teams))
 
@@ -74,9 +76,10 @@ class TrueSkillCalculatorTests(unittest.TestCase):
     def twoPlayerChessTestNotDraw(self, calculator):
         game_info = GameInfo(1200.0, 1200.0 / 3, 200.0, 1200.0 / 300, 0.03)
         teams = Teams([(1, (1301.0007, 42.9232))],
-                      [(2, (1188.7560, 42.5570))])
+                      [(2, (1188.7560, 42.5570))],
+                      rank=[1, 2])
 
-        new_ratings = calculator.calculate_new_ratings(game_info, teams, [1, 2])
+        new_ratings = calculator.calculate_new_ratings(game_info, teams)
 
         self.assertRating(1304.7820836053318, 42.843513887848658, new_ratings.rating_by_id(1))
         self.assertRating(1185.0383099003536, 42.485604606897752, new_ratings.rating_by_id(2))
@@ -84,9 +87,10 @@ class TrueSkillCalculatorTests(unittest.TestCase):
     def oneOnOneMassiveUpsetDrawTest(self, calculator):
         game_info = GameInfo()
         teams = Teams([(1, (25.0, 25.0 / 3))],
-                      [(2, (50.0, 25.0 / 2))])
+                      [(2, (50.0, 25.0 / 2))],
+                      rank=[1, 1])
 
-        new_ratings = calculator.calculate_new_ratings(game_info, teams, [1, 1])
+        new_ratings = calculator.calculate_new_ratings(game_info, teams)
 
         self.assertMatchQuality(0.110, calculator.calculate_match_quality(game_info, teams))
 
@@ -96,51 +100,55 @@ class TrueSkillCalculatorTests(unittest.TestCase):
     def twoOnTwoSimpleTest(self, calculator):
         game_info = GameInfo()
         teams = Teams([(1, (25.0, 25.0 / 3)), (2, (25.0, 25.0 / 3))],
-                      [(3, (25.0, 25.0 / 3)), (4, (25.0, 25.0 / 3))])
+                      [(3, (25.0, 25.0 / 3)), (4, (25.0, 25.0 / 3))],
+                      rank=[1, 2])
 
-        new_ratings = calculator.calculate_new_ratings(game_info, teams, [1, 2])
+        new_ratings = calculator.calculate_new_ratings(game_info, teams)
 
         self.assertMatchQuality(0.447, calculator.calculate_match_quality(game_info, teams))
 
-        self.assertRating(28.108, 7.774, new_ratings[teams[0].player_by_id(1)])
-        self.assertRating(28.108, 7.774, new_ratings[teams[0].player_by_id(2)])
-        self.assertRating(21.892, 7.774, new_ratings[teams[1].player_by_id(3)])
-        self.assertRating(21.892, 7.774, new_ratings[teams[1].player_by_id(4)])
+        self.assertRating(28.108, 7.774, new_ratings.rating_by_id(1))
+        self.assertRating(28.108, 7.774, new_ratings.rating_by_id(2))
+        self.assertRating(21.892, 7.774, new_ratings.rating_by_id(3))
+        self.assertRating(21.892, 7.774, new_ratings.rating_by_id(4))
 
     def twoOnTwoDrawTest(self, calculator):
         game_info = GameInfo()
         teams = Teams([(1, (25.0, 25.0 / 3)), (2, (25.0, 25.0 / 3))],
-                      [(3, (25.0, 25.0 / 3)), (4, (25.0, 25.0 / 3))])
+                      [(3, (25.0, 25.0 / 3)), (4, (25.0, 25.0 / 3))],
+                      rank=[1, 1])
 
-        new_ratings = calculator.calculate_new_ratings(game_info, teams, [1, 1])
+        new_ratings = calculator.calculate_new_ratings(game_info, teams)
 
         self.assertMatchQuality(0.447, calculator.calculate_match_quality(game_info, teams))
 
-        self.assertRating(25.0, 7.455, new_ratings[teams[0].player_by_id(1)])
-        self.assertRating(25.0, 7.455, new_ratings[teams[0].player_by_id(2)])
-        self.assertRating(25.0, 7.455, new_ratings[teams[1].player_by_id(3)])
-        self.assertRating(25.0, 7.455, new_ratings[teams[1].player_by_id(4)])
+        self.assertRating(25.0, 7.455, new_ratings.rating_by_id(1))
+        self.assertRating(25.0, 7.455, new_ratings.rating_by_id(2))
+        self.assertRating(25.0, 7.455, new_ratings.rating_by_id(3))
+        self.assertRating(25.0, 7.455, new_ratings.rating_by_id(4))
 
     def twoOnTwoUnbalancedDrawTest(self, calculator):
         game_info = GameInfo()
         teams = Teams([(1, (15.0, 8.0)), (2, (20.0, 6.0))],
-                      [(3, (25.0, 4.0)), (4, (30.0, 3.0))])
+                      [(3, (25.0, 4.0)), (4, (30.0, 3.0))],
+                      rank=[1, 1])
 
-        new_ratings = calculator.calculate_new_ratings(game_info, teams, [1, 1])
+        new_ratings = calculator.calculate_new_ratings(game_info, teams)
 
         self.assertMatchQuality(0.214, calculator.calculate_match_quality(game_info, teams))
 
-        self.assertRating(21.570, 6.556, new_ratings[teams[0].player_by_id(1)])
-        self.assertRating(23.696, 5.418, new_ratings[teams[0].player_by_id(2)])
+        self.assertRating(21.570, 6.556, new_ratings.rating_by_id(1))
+        self.assertRating(23.696, 5.418, new_ratings.rating_by_id(2))
         self.assertRating(23.357, 3.833, new_ratings.rating_by_id(3))
         self.assertRating(29.075, 2.931, new_ratings.rating_by_id(4))
 
     def twoOnTwoUpsetTest(self, calculator):
         game_info = GameInfo()
         teams = Teams([(1, (20.0, 8.0)), (2, (25.0, 6.0))],
-                      [(3, (35.0, 7.0)), (4, (40.0, 5.0))])
+                      [(3, (35.0, 7.0)), (4, (40.0, 5.0))],
+                      rank=[1, 2])
 
-        new_ratings = calculator.calculate_new_ratings(game_info, teams, [1, 2])
+        new_ratings = calculator.calculate_new_ratings(game_info, teams)
 
         self.assertMatchQuality(0.084, calculator.calculate_match_quality(game_info, teams))
 
@@ -159,9 +167,10 @@ class TrueSkillCalculatorTests(unittest.TestCase):
                       [(5, (25.0, 25.0 / 3)),
                        (6, (25.0, 25.0 / 3)),
                        (7, (25.0, 25.0 / 3)),
-                       (8, (25.0, 25.0 / 3))])
+                       (8, (25.0, 25.0 / 3))],
+                      rank=[1, 2])
 
-        new_ratings = calculator.calculate_new_ratings(game_info, teams, [1, 2])
+        new_ratings = calculator.calculate_new_ratings(game_info, teams)
 
         self.assertMatchQuality(0.447, calculator.calculate_match_quality(game_info, teams))
 
@@ -177,9 +186,10 @@ class TrueSkillCalculatorTests(unittest.TestCase):
     def oneOnTwoSimpleTest(self, calculator):
         game_info = GameInfo()
         teams = Teams([(1, (25.0, 25.0 / 3))],
-                      [(2, (25.0, 25.0 / 3)), (3, (25.0, 25.0 / 3))])
+                      [(2, (25.0, 25.0 / 3)), (3, (25.0, 25.0 / 3))],
+                      rank=[1, 2])
 
-        new_ratings = calculator.calculate_new_ratings(game_info, teams, [1, 2])
+        new_ratings = calculator.calculate_new_ratings(game_info, teams)
 
         self.assertMatchQuality(0.135, calculator.calculate_match_quality(game_info, teams))
 
@@ -190,9 +200,10 @@ class TrueSkillCalculatorTests(unittest.TestCase):
     def oneOnTwoSomewhatBalancedTest(self, calculator):
         game_info = GameInfo()
         teams = Teams([(1, (40.0, 6.0))],
-                      [(2, (20.0, 7.0)), (3, (25.0, 8.0))])
+                      [(2, (20.0, 7.0)), (3, (25.0, 8.0))],
+                      rank=[1, 2])
 
-        new_ratings = calculator.calculate_new_ratings(game_info, teams, [1, 2])
+        new_ratings = calculator.calculate_new_ratings(game_info, teams)
 
         self.assertMatchQuality(0.478, calculator.calculate_match_quality(game_info, teams))
 
@@ -203,9 +214,10 @@ class TrueSkillCalculatorTests(unittest.TestCase):
     def oneOnThreeSimpleTest(self, calculator):
         game_info = GameInfo()
         teams = Teams([(1, (25.0, 25.0 / 3))],
-                      [(2, (25.0, 25.0 / 3)), (3, (25.0, 25.0 / 3)), (4, (25.0, 25.0 / 3))])
+                      [(2, (25.0, 25.0 / 3)), (3, (25.0, 25.0 / 3)), (4, (25.0, 25.0 / 3))],
+                      rank=[1, 2])
 
-        new_ratings = calculator.calculate_new_ratings(game_info, teams, [1, 2])
+        new_ratings = calculator.calculate_new_ratings(game_info, teams)
 
         self.assertMatchQuality(0.012, calculator.calculate_match_quality(game_info, teams))
 
@@ -217,9 +229,10 @@ class TrueSkillCalculatorTests(unittest.TestCase):
     def oneOnTwoDrawTest(self, calculator):
         game_info = GameInfo()
         teams = Teams([(1, (25.0, 25.0 / 3))],
-                      [(2, (25.0, 25.0 / 3)), (3, (25.0, 25.0 / 3))])
+                      [(2, (25.0, 25.0 / 3)), (3, (25.0, 25.0 / 3))],
+                      rank=[1, 1])
 
-        new_ratings = calculator.calculate_new_ratings(game_info, teams, [1, 1])
+        new_ratings = calculator.calculate_new_ratings(game_info, teams)
 
         self.assertMatchQuality(0.135, calculator.calculate_match_quality(game_info, teams))
 
@@ -230,9 +243,10 @@ class TrueSkillCalculatorTests(unittest.TestCase):
     def oneOnThreeDrawTest(self, calculator):
         game_info = GameInfo()
         teams = Teams([(1, (25.0, 25.0 / 3))],
-                      [(2, (25.0, 25.0 / 3)), (3, (25.0, 25.0 / 3)), (4, (25.0, 25.0 / 3))])
+                      [(2, (25.0, 25.0 / 3)), (3, (25.0, 25.0 / 3)), (4, (25.0, 25.0 / 3))],
+                      rank=[1, 1])
 
-        new_ratings = calculator.calculate_new_ratings(game_info, teams, [1, 1])
+        new_ratings = calculator.calculate_new_ratings(game_info, teams)
 
         self.assertMatchQuality(0.012, calculator.calculate_match_quality(game_info, teams))
 
@@ -250,27 +264,29 @@ class TrueSkillCalculatorTests(unittest.TestCase):
                        (5, (25.0, 25.0 / 3)),
                        (6, (25.0, 25.0 / 3)),
                        (7, (25.0, 25.0 / 3)),
-                       (8, (25.0, 25.0 / 3))])
+                       (8, (25.0, 25.0 / 3))],
+                      rank=[1, 2])
 
-        new_ratings = calculator.calculate_new_ratings(game_info, teams, [1, 2])
+        new_ratings = calculator.calculate_new_ratings(game_info, teams)
 
         self.assertMatchQuality(0.000, calculator.calculate_match_quality(game_info, teams))
 
         self.assertRating(40.582, 7.917, new_ratings.rating_by_id(1))
-        self.assertRating( 9.418, 7.917, new_ratings.rating_by_id(2))
-        self.assertRating( 9.418, 7.917, new_ratings.rating_by_id(3))
-        self.assertRating( 9.418, 7.917, new_ratings.rating_by_id(4))
-        self.assertRating( 9.418, 7.917, new_ratings.rating_by_id(5))
-        self.assertRating( 9.418, 7.917, new_ratings.rating_by_id(6))
-        self.assertRating( 9.418, 7.917, new_ratings.rating_by_id(7))
-        self.assertRating( 9.418, 7.917, new_ratings.rating_by_id(8))
+        self.assertRating(9.418, 7.917, new_ratings.rating_by_id(2))
+        self.assertRating(9.418, 7.917, new_ratings.rating_by_id(3))
+        self.assertRating(9.418, 7.917, new_ratings.rating_by_id(4))
+        self.assertRating(9.418, 7.917, new_ratings.rating_by_id(5))
+        self.assertRating(9.418, 7.917, new_ratings.rating_by_id(6))
+        self.assertRating(9.418, 7.917, new_ratings.rating_by_id(7))
+        self.assertRating(9.418, 7.917, new_ratings.rating_by_id(8))
 
     def threeOnTwoTests(self, calculator):
         game_info = GameInfo()
         teams = Teams([(1, (28.0, 7.0)), (2, (27.0, 6.0)), (3, (26.0, 5.0))],
-                      [(4, (30.0, 4.0)), (5, (31.0, 3.0))])
+                      [(4, (30.0, 4.0)), (5, (31.0, 3.0))],
+                      rank=[1, 2])
 
-        new_ratings = calculator.calculate_new_ratings(game_info, teams, [1, 2])
+        new_ratings = calculator.calculate_new_ratings(game_info, teams)
 
         self.assertMatchQuality(0.254, calculator.calculate_match_quality(game_info, teams))
 
@@ -291,9 +307,10 @@ class TrueSkillCalculatorTests(unittest.TestCase):
                        (6, (10.0, 4.0))],
 
                       [(7, (50.0, 5.0)),
-                       (8, (30.0, 2.0))])
+                       (8, (30.0, 2.0))],
+                      rank=[1, 2, 2])
 
-        new_ratings = calculator.calculate_new_ratings(game_info, teams, [1, 2, 2])
+        new_ratings = calculator.calculate_new_ratings(game_info, teams)
 
         self.assertMatchQuality(0.367, calculator.calculate_match_quality(game_info, teams))
 
@@ -302,7 +319,7 @@ class TrueSkillCalculatorTests(unittest.TestCase):
         self.assertRating(19.609, 6.396, new_ratings.rating_by_id(3))
         self.assertRating(18.712, 5.625, new_ratings.rating_by_id(4))
         self.assertRating(29.353, 7.673, new_ratings.rating_by_id(5))
-        self.assertRating( 9.872, 3.891, new_ratings.rating_by_id(6))
+        self.assertRating(9.872, 3.891, new_ratings.rating_by_id(6))
         self.assertRating(48.830, 4.590, new_ratings.rating_by_id(7))
         self.assertRating(29.813, 1.976, new_ratings.rating_by_id(8))
 
@@ -310,9 +327,10 @@ class TrueSkillCalculatorTests(unittest.TestCase):
         game_info = GameInfo()
         teams = Teams([(1, (25.0, 25.0 / 3))],
                       [(2, (25.0, 25.0 / 3))],
-                      [(3, (25.0, 25.0 / 3))])
+                      [(3, (25.0, 25.0 / 3))],
+                      rank=[1, 2, 3])
 
-        new_ratings = calculator.calculate_new_ratings(game_info, teams, [1, 2, 3])
+        new_ratings = calculator.calculate_new_ratings(game_info, teams)
 
         self.assertMatchQuality(0.200, calculator.calculate_match_quality(game_info, teams))
 
@@ -324,9 +342,10 @@ class TrueSkillCalculatorTests(unittest.TestCase):
         game_info = GameInfo()
         teams = Teams([(1, (25.0, 25.0 / 3))],
                       [(2, (25.0, 25.0 / 3))],
-                      [(3, (25.0, 25.0 / 3))])
+                      [(3, (25.0, 25.0 / 3))],
+                      rank=[1, 1, 1])
 
-        new_ratings = calculator.calculate_new_ratings(game_info, teams, [1, 1, 1])
+        new_ratings = calculator.calculate_new_ratings(game_info, teams)
 
         self.assertMatchQuality(0.200, calculator.calculate_match_quality(game_info, teams))
 
@@ -339,9 +358,10 @@ class TrueSkillCalculatorTests(unittest.TestCase):
         teams = Teams([(1, (25.0, 25.0 / 3))],
                       [(2, (25.0, 25.0 / 3))],
                       [(3, (25.0, 25.0 / 3))],
-                      [(4, (25.0, 25.0 / 3))])
+                      [(4, (25.0, 25.0 / 3))],
+                      rank=[1, 2, 3, 4])
 
-        new_ratings = calculator.calculate_new_ratings(game_info, teams, [1, 2, 3, 4])
+        new_ratings = calculator.calculate_new_ratings(game_info, teams)
 
         self.assertMatchQuality(0.089, calculator.calculate_match_quality(game_info, teams))
 
@@ -356,9 +376,10 @@ class TrueSkillCalculatorTests(unittest.TestCase):
                       [(2, (25.0, 25.0 / 3))],
                       [(3, (25.0, 25.0 / 3))],
                       [(4, (25.0, 25.0 / 3))],
-                      [(5, (25.0, 25.0 / 3))])
+                      [(5, (25.0, 25.0 / 3))],
+                      rank=[1, 2, 3, 4, 5])
 
-        new_ratings = calculator.calculate_new_ratings(game_info, teams, [1, 2, 3, 4, 5])
+        new_ratings = calculator.calculate_new_ratings(game_info, teams)
 
         self.assertMatchQuality(0.040, calculator.calculate_match_quality(game_info, teams))
 
@@ -377,9 +398,10 @@ class TrueSkillCalculatorTests(unittest.TestCase):
                       [(5, (25.0, 25.0 / 3))],
                       [(6, (25.0, 25.0 / 3))],
                       [(7, (25.0, 25.0 / 3))],
-                      [(8, (25.0, 25.0 / 3))])
+                      [(8, (25.0, 25.0 / 3))],
+                      rank=[1, 1, 1, 1, 1, 1, 1, 1])
 
-        new_ratings = calculator.calculate_new_ratings(game_info, teams, [1, 1, 1, 1, 1, 1, 1, 1])
+        new_ratings = calculator.calculate_new_ratings(game_info, teams)
 
         self.assertMatchQuality(0.004, calculator.calculate_match_quality(game_info, teams))
 
@@ -401,9 +423,10 @@ class TrueSkillCalculatorTests(unittest.TestCase):
                       [(5, (30.0, 4.0))],
                       [(6, (35.0, 3.0))],
                       [(7, (40.0, 2.0))],
-                      [(8, (45.0, 1.0))])
+                      [(8, (45.0, 1.0))],
+                      rank=[1, 2, 3, 4, 5, 6, 7, 8])
 
-        new_ratings = calculator.calculate_new_ratings(game_info, teams, [1, 2, 3, 4, 5, 6, 7, 8])
+        new_ratings = calculator.calculate_new_ratings(game_info, teams)
 
         self.assertMatchQuality(0.000, calculator.calculate_match_quality(game_info, teams))
 
@@ -433,9 +456,10 @@ class TrueSkillCalculatorTests(unittest.TestCase):
                       [(13, (25.0, 25.0 / 3))],
                       [(14, (25.0, 25.0 / 3))],
                       [(15, (25.0, 25.0 / 3))],
-                      [(16, (25.0, 25.0 / 3))])
+                      [(16, (25.0, 25.0 / 3))],
+                      rank=list(range(16)))
 
-        new_ratings = calculator.calculate_new_ratings(game_info, teams, list(range(16)))
+        new_ratings = calculator.calculate_new_ratings(game_info, teams)
 
         # current matrix implementation is too slow for this
         #self.assertMatchQuality(0.000, calculator.calculate_match_quality(game_info, teams))
@@ -462,9 +486,10 @@ class TrueSkillCalculatorTests(unittest.TestCase):
         game_info = GameInfo()
         teams = Teams([(1, (25.0, 25.0 / 3))],
                       [((2, 0.0), (25.0, 25.0 / 3)),
-                       ((2, 1.00), (25.0, 25.0 / 3))])
+                       ((2, 1.00), (25.0, 25.0 / 3))],
+                      rank=[1, 2])
 
-        new_ratings = calculator.calculate_new_ratings(game_info, teams, [1, 2])
+        new_ratings = calculator.calculate_new_ratings(game_info, teams)
         match_quality = calculator.calculate_match_quality(game_info, teams)
 
     def assertRating(self, expected_mean, expected_stdev, actual):

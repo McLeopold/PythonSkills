@@ -16,15 +16,13 @@ class FactorGraphTrueSkillCalculator(SkillCalculator):
                                   SkillCalculatorSupportedOptions.PARTIAL_UPDATE),
                                  Range.at_least(2), Range.at_least(1))
 
-    def calculate_new_ratings(self, game_info, teams, team_ranks):
+    def calculate_new_ratings(self, game_info, teams):
         self.validate_team_count_and_players_count_per_team(teams)
 
         # ensure sorted by rank
-        team_ranks, teams = zip(*sorted(zip(team_ranks, teams)))
-        team_ranks = list(team_ranks)
-        teams = list(teams)
+        teams.sort()
 
-        factor_graph = TrueSkillFactorGraph(game_info, teams, team_ranks)
+        factor_graph = TrueSkillFactorGraph(game_info, teams, teams.rank)
         factor_graph.build_graph()
         factor_graph.run_schedule()
 

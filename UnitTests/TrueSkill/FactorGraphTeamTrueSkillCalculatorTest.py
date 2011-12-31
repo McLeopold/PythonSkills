@@ -11,15 +11,15 @@ class FactorGraphTeamTrueSkillCalculatorTest(TrueSkillCalculatorTests):
     log.addHandler(logging.StreamHandler())
     log.setLevel(logging.INFO)
     # modify base schedule object to use logging
-    Schedule.log = log.info
+    #Schedule.log = log.info
 
     def testFactorGraphTrueSkillCalculator(self):
         calculator = FactorGraphTrueSkillCalculator()
-        
+
         self.allTwoPlayerScenarios(calculator)
         self.allTwoTeamScenarios(calculator)
         self.allMultipleTeamScenarios(calculator)
-        
+
         self.partialPlayScenarios(calculator)
 
 if __name__ == "__main__":

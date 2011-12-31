@@ -11,7 +11,7 @@ class SkillCalculator():
         self.total_teams_allowed = total_teams_allowed
         self.players_per_team_allowed = players_per_team_allowed
 
-    def calculate_new_ratings(self, game_info, teams_of_player_to_ratings, team_ranks):
+    def calculate_new_ratings(self, game_info, teams_of_player_to_ratings):
         raise NotImplementedError("calculate_new_ratings not implemented")
 
     def is_supported(self, option):

@@ -1,22 +1,21 @@
 from Skills.SkillCalculator import SkillCalculator
 from Skills.Numerics.Range import Range
 from Skills.TrueSkill.DrawMargin import DrawMargin
-from Skills.PairwiseComparison import PairwiseComparison
 from Skills.TrueSkill.TruncatedGaussianCorrectionFunctions import TruncatedGaussianCorrectionFunctions
 from Skills.Rating import Rating
+from Skills.Team import Team
+from Skills.Teams import Teams
 from math import sqrt, exp
 
 class TwoPlayerTrueSkillCalculator(SkillCalculator):
     def __init__(self):
         SkillCalculator.__init__(self, None, Range.exactly(2), Range.exactly(1))
 
-    def calculate_new_ratings(self, game_info, teams, team_ranks):
+    def calculate_new_ratings(self, game_info, teams):
         self.validate_team_count_and_players_count_per_team(teams)
 
         # ensure sorted by rank
-        team_ranks, teams = zip(*sorted(zip(team_ranks, teams)))
-        team_ranks = list(team_ranks)
-        teams = list(teams)
+        teams.sort()
 
         winning_team_players = teams[0].players()
         winner = winning_team_players[0]
@@ -26,22 +25,16 @@ class TwoPlayerTrueSkillCalculator(SkillCalculator):
         loser = losing_team_players[0]
         loser_previous_rating = teams[1][loser]
 
-        was_draw = team_ranks[0] == team_ranks[1]
+        results = Teams()
 
-        results = Team()
-
-        results[winner] = self.calculate_new_rating(game_info,
-                                                    winner_previous_rating,
-                                                    loser_previous_rating,
-                                                    PairwiseComparison.DRAW
-                                                        if was_draw else
-                                                        PairwiseComparison.WIN)
-        results[loser] = self.calculate_new_rating(game_info,
-                                                   loser_previous_rating,
-                                                   winner_previous_rating,
-                                                   PairwiseComparison.DRAW
-                                                        if was_draw else
-                                                        PairwiseComparison.LOSE)
+        results.append(Team(winner, self.calculate_new_rating(game_info,
+                                                              winner_previous_rating,
+                                                              loser_previous_rating,
+                                                              teams.comparison())))
+        results.append(Team(loser, self.calculate_new_rating(game_info,
+                                                             loser_previous_rating,
+                                                             winner_previous_rating,
+                                                             teams.comparison(False))))
 
         return results
 
@@ -56,13 +49,13 @@ class TwoPlayerTrueSkillCalculator(SkillCalculator):
         winning_mean = self_rating.mean
         losing_mean = opponent_rating.mean
 
-        if comparison == PairwiseComparison.LOSE:
+        if comparison == Teams.LOSE:
             winning_mean = opponent_rating.mean
             losing_mean = self_rating.mean
 
         mean_delta = winning_mean - losing_mean
 
-        if comparison != PairwiseComparison.DRAW:
+        if comparison != Teams.DRAW:
             v = TruncatedGaussianCorrectionFunctions.v_exceeds_margin_scaled(mean_delta, draw_margin, c)
             w = TruncatedGaussianCorrectionFunctions.w_exceeds_margin_scaled(mean_delta, draw_margin, c)
             rank_multiplier = float(comparison)
@@ -84,7 +77,7 @@ class TwoPlayerTrueSkillCalculator(SkillCalculator):
     def calculate_match_quality(self, game_info, teams):
         self.validate_team_count_and_players_count_per_team(teams)
 
-        player1rating, player2rating = [team.ratings[0] for team in teams]
+        player1rating, player2rating = [team.ratings()[0] for team in teams]
 
         twice_beta_squared = 2.0 * game_info.beta ** 2.0
         player1sigma_squared = player1rating.stdev ** 2.0

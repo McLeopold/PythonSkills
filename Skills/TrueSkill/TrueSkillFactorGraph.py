@@ -8,10 +8,11 @@ from Skills.TrueSkill.Layers.IteratedTeamDifferencesInnerLayer import IteratedTe
 from Skills.TrueSkill.Layers.TeamPerformancesToTeamPerformanceDifferencesLayer import TeamPerformancesToTeamPerformanceDifferencesLayer
 from Skills.TrueSkill.Layers.TeamDifferencesComparisonLayer import TeamDifferencesComparisonLayer
 from Skills.FactorGraphs.FactorList import FactorList
-from math import exp
 from Skills.FactorGraphs.Schedule import ScheduleSequence
 from Skills.Rating import Rating
 from Skills.Team import Team
+from Skills.Teams import Teams
+from math import exp
 
 class TrueSkillFactorGraph(FactorGraph):
 
@@ -40,7 +41,7 @@ class TrueSkillFactorGraph(FactorGraph):
 
     def run_schedule(self):
         full_schedule = self.create_full_schedule()
-        full_schedule_delta = full_schedule.visit()
+        full_schedule.visit()
 
     def probability_of_ranking(self):
         factor_list = FactorList()
@@ -68,12 +69,14 @@ class TrueSkillFactorGraph(FactorGraph):
         return ScheduleSequence("Full schedule", full_schedule)
 
     def updated_ratings(self):
-        result = Team()
+        results = Teams()
 
         for current_team in self.prior_layer.output_variables_groups:
+            team_results = Team()
             for current_player, current_player_rating in [(player.key, player.value) for player in current_team]:
                 new_rating = Rating(current_player_rating.mean,
                                     current_player_rating.stdev)
-                result[current_player] = new_rating
+                team_results[current_player] = new_rating
+            results.append(team_results)
 
-        return result
+        return results
