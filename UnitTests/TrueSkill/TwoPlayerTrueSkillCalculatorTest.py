@@ -10,5 +10,4 @@ class TwoPlayerTrueSkillCalculatorTest(TrueSkillCalculatorTests):
         self.allTwoPlayerScenarios(calculator)
 
 if __name__ == "__main__":
-    #import sys;sys.argv = ['', 'TwoPlayerTrueSkillCalculatorTest .testTwoPlayerTrueSkillCalculator']
     unittest.main()

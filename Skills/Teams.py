@@ -74,11 +74,3 @@ class Teams(list):
     @staticmethod
     def FreeForAll(*players, **kwds):
         return Teams(*[[player] for player in players], **kwds)
-
-if __name__ == "__main__":
-    teams = Teams([(1, (25.0, 8.333))],
-                  [(2, (25.0, 8.333))],
-                  rank=[2, 1])
-
-    teams.sort()
-    print(teams)

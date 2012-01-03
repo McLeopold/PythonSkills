@@ -512,5 +512,4 @@ class TrueSkillCalculatorTests(unittest.TestCase):
                                TrueSkillCalculatorTests.ERROR_TOLERANCE_MATCH_QUALITY)
 
 if __name__ == "__main__":
-    #import sys;sys.argv = ['', 'TrueSkillCalculatorTests.testTwoPlayerNotDraw']
     unittest.main()

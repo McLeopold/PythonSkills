@@ -140,7 +140,3 @@ def DiagonalMatrix(values):
 
 def IdentityMatrix(rows):
     return DiagonalMatrix([1] * rows)
-
-if __name__ == '__main__':
-    m = Matrix([[1, 2], [3, 4]])
-    print(m.inverse())
