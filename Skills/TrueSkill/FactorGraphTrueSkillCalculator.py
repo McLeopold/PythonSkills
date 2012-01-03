@@ -2,7 +2,6 @@ from Skills.SkillCalculator import SkillCalculator, SkillCalculatorSupportedOpti
 from Skills.Numerics.Range import Range
 from Skills.TrueSkill.TrueSkillFactorGraph import TrueSkillFactorGraph
 from Skills.Numerics.Matrix import DiagonalMatrix, Matrix
-from Skills.PartialPlay import PartialPlay
 from math import sqrt, exp
 
 class FactorGraphTrueSkillCalculator(SkillCalculator):
@@ -76,12 +75,12 @@ class FactorGraphTrueSkillCalculator(SkillCalculator):
             current_team = teams[current_column]
             player_assignments[current_column] = [0] * total_previous_players
             for current_player in current_team.players():
-                player_assignments[current_column].append(PartialPlay.partial_play_percentage(current_player))
+                player_assignments[current_column].append(current_player.partial_play_percentage)
                 total_previous_players += 1
             rows_remaining = total_players - total_previous_players
             next_team = teams[current_column + 1]
             for next_team_player in next_team.players():
-                player_assignments[current_column].append(-1.0 * PartialPlay.partial_play_percentage(next_team_player))
+                player_assignments[current_column].append(-1.0 * next_team_player.partial_play_percentage)
                 rows_remaining -= 1
             player_assignments[current_column].extend([0.0] * rows_remaining)
 

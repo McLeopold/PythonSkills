@@ -6,7 +6,7 @@ class TwoPlayerTrueSkillCalculatorTest(TrueSkillCalculatorTests):
 
     def testTwoPlayerTrueSkillCalculator(self):
         calculator = TwoPlayerTrueSkillCalculator()
-        
+
         self.allTwoPlayerScenarios(calculator)
 
 if __name__ == "__main__":

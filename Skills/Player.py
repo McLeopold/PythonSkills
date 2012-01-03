@@ -12,8 +12,8 @@ class Player():
     def __init__(self, player_id=None,
                        partial_play_percentage=DEFAULT_PARTIAL_PLAY_PERCENTAGE,
                        partial_update_percentage=DEFAULT_PARTIAL_UPDATE_PERCENTAGE):
-        if not (0.0 <= partial_play_percentage <= 1.0):
-            raise PlayerError("partial_player_percentage is not in the range [0.0, 1.0]")
+        if not (0.0001 <= partial_play_percentage <= 1.0):
+            raise PlayerError("partial_player_percentage is not in the range [0.0001, 1.0]")
         if not (0.0 <= partial_update_percentage <= 1.0):
             raise PlayerError("partial_update_percentage is not in the range [0.0, 1.0]")
 

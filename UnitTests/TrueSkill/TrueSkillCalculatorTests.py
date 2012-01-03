@@ -2,7 +2,7 @@ import unittest
 from Skills.GameInfo import GameInfo
 from Skills.Teams import Teams
 from Skills.Numerics.Matrix import Matrix
-    
+
 class TrueSkillCalculatorTests(unittest.TestCase):
 
     ERROR_TOLERANCE_TRUESKILL = 0.085
@@ -485,12 +485,17 @@ class TrueSkillCalculatorTests(unittest.TestCase):
     def oneOnTwoBalancedPartialPlay(self, calculator):
         game_info = GameInfo()
         teams = Teams([(1, (25.0, 25.0 / 3))],
-                      [((2, 0.0), (25.0, 25.0 / 3)),
-                       ((2, 1.00), (25.0, 25.0 / 3))],
+                      [((2, 0.5), (25.0, 25.0 / 3)),
+                       ((3, 0.5), (25.0, 25.0 / 3))],
                       rank=[1, 2])
 
         new_ratings = calculator.calculate_new_ratings(game_info, teams)
-        match_quality = calculator.calculate_match_quality(game_info, teams)
+
+        self.assertMatchQuality(0.4472135955, calculator.calculate_match_quality(game_info, teams))
+
+        self.assertRating(30.1102397877, 6.73461146087, new_ratings.rating_by_id(1))
+        self.assertRating(22.4448801061, 7.96412515904, new_ratings.rating_by_id(2))
+        self.assertRating(22.4448801061, 7.96412515904, new_ratings.rating_by_id(3))
 
     def assertRating(self, expected_mean, expected_stdev, actual):
         self.assertAlmostEqual(expected_mean, actual.mean, None,

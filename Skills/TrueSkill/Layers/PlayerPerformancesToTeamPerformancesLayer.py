@@ -1,6 +1,5 @@
 from Skills.TrueSkill.Layers.TrueSkillFactorGraphLayer import TrueSkillFactorGraphLayer
 from Skills.FactorGraphs.Schedule import ScheduleStep
-from Skills.PartialPlay import PartialPlay
 from Skills.TrueSkill.Factors.GaussianWeightedSumFactor import GaussianWeightedSumFactor
 
 class PlayerPerformancesToTeamPerformancesLayer(TrueSkillFactorGraphLayer):
@@ -27,9 +26,9 @@ class PlayerPerformancesToTeamPerformancesLayer(TrueSkillFactorGraphLayer):
         return sequence
 
     def create_player_to_team_sum_factor(self, team_members, sum_variable):
-        weights = map(lambda v: PartialPlay.partial_play_percentage(v.key),
-                      team_members)
-        return GaussianWeightedSumFactor(sum_variable, team_members, weights)
+        return GaussianWeightedSumFactor(sum_variable, team_members,
+                                         [player.key.partial_play_percentage
+                                          for player in team_members])
 
     def create_posterior_schedule(self):
         all_factors = []
