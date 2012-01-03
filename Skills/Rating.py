@@ -1,4 +1,4 @@
-from Numerics.GaussianDistribution import GaussianDistribution
+from Numerics.Gauss import Gauss
 
 class RatingError(Exception):
     pass
@@ -26,8 +26,8 @@ class Rating():
         return self.mean - game_info.conservative_stdev_multiplier * self.stdev
 
     def partial_update(self, prior, full_posterior, update_percentage):
-        prior_gaussian = GaussianDistribution(prior.mean, prior.stdev)
-        posterior_gaussian = GaussianDistribution(full_posterior.mean, full_posterior.stdev)
+        prior_gaussian = Gauss(prior.mean, prior.stdev)
+        posterior_gaussian = Gauss(full_posterior.mean, full_posterior.stdev)
 
         precision_difference = posterior_gaussian.precision - prior_gaussian.precision
         partial_precision_difference = update_percentage * precision_difference
@@ -35,7 +35,7 @@ class Rating():
         precision_mean_difference = posterior_gaussian.precision_mean - prior_gaussian.precision_mean
         partial_precision_mean_difference = update_percentage * precision_mean_difference
 
-        partial_posterior_gaussian = GaussianDistribution.from_precision_mean(
+        partial_posterior_gaussian = Gauss.from_precision_mean(
             prior_gaussian.precision_mean + partial_precision_mean_difference,
             prior_gaussian.precision + partial_precision_difference)
 

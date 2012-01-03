@@ -6,30 +6,18 @@ class SkillCalculator():
     Base class for all skill calculator implementations.
     '''
 
-    def __init__(self, supported_options, total_teams_allowed, players_per_team_allowed):
-        self.supported_options = supported_options
+    def __init__(self, total_teams_allowed, players_per_team_allowed,
+                 allow_partial_play=False, allow_partial_update=False):
         self.total_teams_allowed = total_teams_allowed
         self.players_per_team_allowed = players_per_team_allowed
+        self.allow_partial_play = allow_partial_play
+        self.allow_partial_update = allow_partial_update
 
     def calculate_new_ratings(self, game_info, teams_of_player_to_ratings):
         raise NotImplementedError("calculate_new_ratings not implemented")
 
-    def is_supported(self, option):
-        return self.supported_options & option == option
-
-    def validate_team_count_and_players_count_per_team(self, teams_of_player_to_ratings):
-        SkillCalculator.validate_team_count_and_players_count_per_team_with_ranges(teams_of_player_to_ratings,
-                                                                                   self.total_teams_allowed,
-                                                                                   self.players_per_team_allowed)
-
-    @staticmethod
-    def validate_team_count_and_players_count_per_team_with_ranges(teams, total_teams, players_per_team):
-        if len(teams) not in total_teams:
+    def validate_team_count_and_players_count_per_team(self, teams):
+        if len(teams) not in self.total_teams_allowed:
             raise SkillCalculatorError("team range is not in range")
-        if any(len(team) not in players_per_team for team in teams):
+        if any(len(team) not in self.players_per_team_allowed for team in teams):
             raise SkillCalculatorError("player count is not in range")
-
-class SkillCalculatorSupportedOptions():
-    NONE = 0
-    PARTIAL_PLAY = 1
-    PARTIAL_UPDATE = 2

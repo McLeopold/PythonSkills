@@ -1,4 +1,4 @@
-from GaussianFactor import GaussianFactor, GaussianDistribution
+from GaussianFactor import GaussianFactor, Gauss
 from copy import copy
 
 class GaussianWeightedSumFactorError(Exception):
@@ -66,7 +66,7 @@ class GaussianWeightedSumFactor(GaussianFactor):
     def log_normalization(self):
         result = 0.0
         for i in range(1, len(self.variables)):
-            result += GaussianDistribution.log_ratio_normalization(self.variables[i].value, self.messages[i].value)
+            result += Gauss.log_ratio_normalization(self.variables[i].value, self.messages[i].value)
 
         return result
 
@@ -96,7 +96,7 @@ class GaussianWeightedSumFactor(GaussianFactor):
         new_precision_mean = new_precision * weighted_mean_sum
         another_new_precision_mean = another_new_precision * another_weighted_mean_sum
 
-        new_message = GaussianDistribution.from_precision_mean(new_precision_mean, new_precision)
+        new_message = Gauss.from_precision_mean(new_precision_mean, new_precision)
         old_marginal_without_message = marginal0 / message0
 
         new_marginal = old_marginal_without_message * new_message

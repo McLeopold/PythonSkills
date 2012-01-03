@@ -1,4 +1,4 @@
-from Skills.SkillCalculator import SkillCalculator, SkillCalculatorSupportedOptions
+from Skills.SkillCalculator import SkillCalculator
 from Skills.Numerics.Range import Range
 from Skills.TrueSkill.TrueSkillFactorGraph import TrueSkillFactorGraph
 from Skills.Numerics.Matrix import DiagonalMatrix, Matrix
@@ -10,10 +10,7 @@ class FactorGraphTrueSkillCalculator(SkillCalculator):
     '''
 
     def __init__(self):
-        SkillCalculator.__init__(self,
-                                 (SkillCalculatorSupportedOptions.PARTIAL_PLAY |
-                                  SkillCalculatorSupportedOptions.PARTIAL_UPDATE),
-                                 Range.at_least(2), Range.at_least(1))
+        SkillCalculator.__init__(self, Range.at_least(2), Range.at_least(1), True, True)
 
     def calculate_new_ratings(self, game_info, teams):
         self.validate_team_count_and_players_count_per_team(teams)

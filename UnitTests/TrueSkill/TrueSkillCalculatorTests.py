@@ -510,6 +510,3 @@ class TrueSkillCalculatorTests(unittest.TestCase):
         self.assertAlmostEqual(expected_match_quality, actual_match_quality, None,
                                "expected match quality of %.15f, got %.15f" % (expected_match_quality, actual_match_quality),
                                TrueSkillCalculatorTests.ERROR_TOLERANCE_MATCH_QUALITY)
-
-if __name__ == "__main__":
-    unittest.main()

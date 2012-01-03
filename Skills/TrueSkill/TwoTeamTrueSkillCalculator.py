@@ -12,7 +12,7 @@ class TwoTeamTrueSkillCalculator(SkillCalculator):
     '''
 
     def __init__(self):
-        SkillCalculator.__init__(self, None, Range.exactly(2), Range.at_least(1))
+        SkillCalculator.__init__(self, Range.exactly(2), Range.at_least(1))
 
     def calculate_new_ratings(self, game_info, teams):
         self.validate_team_count_and_players_count_per_team(teams)

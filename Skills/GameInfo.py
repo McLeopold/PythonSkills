@@ -1,4 +1,4 @@
-from Skills.Numerics.GaussianDistribution import GaussianDistribution
+from Skills.Numerics.Gauss import Gauss
 from Skills.Rating import Rating
 from math import sqrt
 
@@ -31,10 +31,10 @@ class GameInfo():
             self.dynamics_factor = float(dynamics_factor)
             self.draw_probability = float(draw_probability)
             self.conservative_stdev_multiplier = float(conservative_stdev_multiplier)
-            self.draw_margin = float(GaussianDistribution.inverse_cumulative_to(0.5 * (self.draw_probability + 1), 0, 1) *
+            self.draw_margin = float(Gauss.inverse_cumulative_to(0.5 * (self.draw_probability + 1), 0, 1) *
                                      sqrt(1 + 1) * self.beta)
         except ValueError:
             raise GameInfoError("GameInfo arguments must be numeric")
 
     def default_rating(self):
-        return Rating(self.initial_mean, self.initial_stdev)    
+        return Rating(self.initial_mean, self.initial_stdev)

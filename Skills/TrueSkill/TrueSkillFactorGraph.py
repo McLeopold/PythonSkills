@@ -1,7 +1,7 @@
 from Skills.FactorGraphs.FactorGraph import FactorGraph
 from Skills.TrueSkill.Layers.PlayerPriorValuesToSkillsLayer import PlayerPriorValuesToSkillsLayer
 from Skills.FactorGraphs.VariableFactory import VariableFactory
-from Skills.Numerics.GaussianDistribution import GaussianDistribution
+from Skills.Numerics.Gauss import Gauss
 from Skills.TrueSkill.Layers.PlayerSkillsToPerformancesLayer import PlayerSkillsToPerformancesLayer
 from Skills.TrueSkill.Layers.PlayerPerformancesToTeamPerformancesLayer import PlayerPerformancesToTeamPerformancesLayer
 from Skills.TrueSkill.Layers.IteratedTeamDifferencesInnerLayer import IteratedTeamDefferencesInnerLayer
@@ -19,7 +19,7 @@ class TrueSkillFactorGraph(FactorGraph):
     def __init__(self, game_info, teams, team_ranks):
         self.prior_layer = PlayerPriorValuesToSkillsLayer(self, teams)
         self.game_info = game_info
-        new_factory = VariableFactory(lambda: GaussianDistribution.from_precision_mean(0.0, 0.0))
+        new_factory = VariableFactory(lambda: Gauss.from_precision_mean(0.0, 0.0))
         self.variable_factory = new_factory
         self.layers = [
             self.prior_layer,
