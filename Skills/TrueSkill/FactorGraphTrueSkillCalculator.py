@@ -1,7 +1,7 @@
 from Skills.SkillCalculator import SkillCalculator, SkillCalculatorSupportedOptions
 from Skills.Numerics.Range import Range
 from Skills.TrueSkill.TrueSkillFactorGraph import TrueSkillFactorGraph
-from Skills.Numerics.Matrix import Vector, DiagonalMatrix, Matrix
+from Skills.Numerics.Matrix import DiagonalMatrix, Matrix
 from Skills.PartialPlay import PartialPlay
 from math import sqrt, exp
 
@@ -31,25 +31,28 @@ class FactorGraphTrueSkillCalculator(SkillCalculator):
         return factor_graph.updated_ratings()
 
     def calculate_match_quality(self, game_info, teams):
-        team_assignments_list = teams
-        skills_matrix = self.player_covariance_matrix(teams)
-        mean_vector = self.player_means_vector(teams)
-        mean_vector_transpose = mean_vector.transpose()
+        skills_matrix = DiagonalMatrix([rating.stdev ** 2
+                                            for team in teams
+                                                for rating in team.ratings()])
+        mean_vector_transpose = Matrix([[rating.mean
+                                 for team in teams
+                                     for rating in team.ratings()]])
+        mean_vector = mean_vector_transpose.transpose()
 
-        player_team_assignments_matrix = self.create_player_team_assignment_matrix(team_assignments_list, mean_vector.rows)
-        player_team_assignments_matrix_transpose = player_team_assignments_matrix.transpose()
+        player_teams_matrix = self.create_player_team_assignment_matrix(teams)
+        player_teams_matrix_transpose = player_teams_matrix.transpose()
 
         beta_squared = game_info.beta ** 2
 
-        start = mean_vector_transpose * player_team_assignments_matrix
-        aTa = (beta_squared * player_team_assignments_matrix_transpose) * player_team_assignments_matrix
-        aTSA = (player_team_assignments_matrix_transpose * skills_matrix) * player_team_assignments_matrix
+        start = mean_vector_transpose * player_teams_matrix
+        aTa = (beta_squared * player_teams_matrix_transpose) * player_teams_matrix
+        aTSA = (player_teams_matrix_transpose * skills_matrix) * player_teams_matrix
 
         middle = aTa + aTSA
 
         middle_inverse = middle.inverse()
 
-        end = player_team_assignments_matrix_transpose * mean_vector
+        end = player_teams_matrix_transpose * mean_vector
 
         exp_part_matrix = (-0.5 * ((start * middle_inverse) * end))
         exp_part = exp_part_matrix.determinant()
@@ -62,35 +65,24 @@ class FactorGraphTrueSkillCalculator(SkillCalculator):
 
         return result
 
-    def player_means_vector(self, team_assignments_list):
-        return Vector([rating.mean
-                        for team in team_assignments_list
-                            for rating in team.ratings()])
-
-    def player_covariance_matrix(self, team_assignments_list):
-        return DiagonalMatrix([rating.stdev ** 2
-                                for team in team_assignments_list
-                                    for rating in team.ratings()])
-
-    def create_player_team_assignment_matrix(self, team_assignments_list, total_players):
+    def create_player_team_assignment_matrix(self, teams):
+        total_players = sum(len(team) for team in teams)
         player_assignments = []
         total_previous_players = 0
 
-        team_assignments_list_count = len(team_assignments_list)
+        team_assignments_list_count = len(teams)
         for current_column in range(team_assignments_list_count - 1):
             player_assignments.append([])
-            current_team = team_assignments_list[current_column]
+            current_team = teams[current_column]
             player_assignments[current_column] = [0] * total_previous_players
             for current_player in current_team.players():
                 player_assignments[current_column].append(PartialPlay.partial_play_percentage(current_player))
                 total_previous_players += 1
             rows_remaining = total_players - total_previous_players
-            next_team = team_assignments_list[current_column + 1]
+            next_team = teams[current_column + 1]
             for next_team_player in next_team.players():
                 player_assignments[current_column].append(-1.0 * PartialPlay.partial_play_percentage(next_team_player))
                 rows_remaining -= 1
             player_assignments[current_column].extend([0.0] * rows_remaining)
 
-        return Matrix.from_column_values(total_players,
-                                         team_assignments_list_count - 1,
-                                         player_assignments)
+        return Matrix(player_assignments).transpose()

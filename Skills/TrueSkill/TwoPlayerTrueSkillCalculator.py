@@ -24,34 +24,26 @@ class TwoPlayerTrueSkillCalculator(SkillCalculator):
         loser = losing_team_players[0]
         loser_previous_rating = teams[1][loser]
 
-        results = Teams()
-
-        results.append(Team(winner, self.calculate_new_rating(game_info,
-                                                              winner_previous_rating,
-                                                              loser_previous_rating,
-                                                              teams.comparison())))
-        results.append(Team(loser, self.calculate_new_rating(game_info,
-                                                             loser_previous_rating,
-                                                             winner_previous_rating,
-                                                             teams.comparison(False))))
-
-        return results
+        return Teams(Team(winner, self.calculate_new_rating(game_info,
+                                                            winner_previous_rating,
+                                                            loser_previous_rating,
+                                                            teams.comparison())),
+                     Team(loser, self.calculate_new_rating(game_info,
+                                                           loser_previous_rating,
+                                                           winner_previous_rating,
+                                                           teams.comparison(False))))
 
     def calculate_new_rating(self, game_info, self_rating, opponent_rating, comparison):
+        if comparison == Teams.LOSE:
+            mean_delta = opponent_rating.mean - self_rating.mean
+        else:
+            mean_delta = self_rating.mean - opponent_rating.mean
+
         c = sqrt(
             self_rating.stdev ** 2.0 +
             opponent_rating.stdev ** 2.0 +
             2.0 * game_info.beta ** 2.0
         )
-
-        winning_mean = self_rating.mean
-        losing_mean = opponent_rating.mean
-
-        if comparison == Teams.LOSE:
-            winning_mean = opponent_rating.mean
-            losing_mean = self_rating.mean
-
-        mean_delta = winning_mean - losing_mean
 
         if comparison != Teams.DRAW:
             v = TruncatedGaussianCorrectionFunctions.v_exceeds_margin_scaled(mean_delta, game_info.draw_margin, c)

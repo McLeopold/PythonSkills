@@ -18,32 +18,26 @@ class TwoTeamTrueSkillCalculator(SkillCalculator):
         self.validate_team_count_and_players_count_per_team(teams)
         teams.sort()
 
-        return Teams(self.update_player_ratings(game_info, teams[0], teams[1],
-                                                teams.comparison()),
-                     self.update_player_ratings(game_info, teams[1], teams[0],
-                                                teams.comparison(False)))
+        return Teams(self.calculate_new_team_ratings(game_info, teams[0], teams[1],
+                                                     teams.comparison()),
+                     self.calculate_new_team_ratings(game_info, teams[1], teams[0],
+                                                     teams.comparison(False)))
 
-    def update_player_ratings(self, game_info, self_team, other_team,
-                              self_to_other_team_comparison):
-        beta_squared = game_info.beta ** 2
-        tau_squared = game_info.dynamics_factor ** 2
-
-        total_players = len(self_team) + len(other_team)
-
+    def calculate_new_team_ratings(self, game_info, self_team, other_team,
+                                   self_to_other_team_comparison):
         self_mean_sum = sum(rating.mean for rating in self_team.ratings())
         other_team_mean_sum = sum(rating.mean for rating in other_team.ratings())
+        if self_to_other_team_comparison == Teams.LOSE:
+            mean_delta = other_team_mean_sum - self_mean_sum
+        else:
+            mean_delta = self_mean_sum - other_team_mean_sum
 
         c = sqrt(
             sum(rating.stdev ** 2.0 for rating in self_team.ratings()) +
             sum(rating.stdev ** 2.0 for rating in other_team.ratings()) +
-            total_players * beta_squared
+            (len(self_team) + len(other_team)) * game_info.beta ** 2
         )
-
-        winning_mean, losing_mean = ((other_team_mean_sum, self_mean_sum)
-                                     if self_to_other_team_comparison == Teams.LOSE else
-                                     (self_mean_sum, other_team_mean_sum))
-
-        mean_delta = winning_mean - losing_mean
+        tau_squared = game_info.dynamics_factor ** 2
 
         if self_to_other_team_comparison != Teams.DRAW:
             v = TruncatedGaussianCorrectionFunctions.v_exceeds_margin_scaled(mean_delta, game_info.draw_margin, c)
@@ -54,7 +48,7 @@ class TwoTeamTrueSkillCalculator(SkillCalculator):
             w = TruncatedGaussianCorrectionFunctions.w_within_margin_scaled(mean_delta, game_info.draw_margin, c)
             rank_multiplier = 1.0
 
-        new_player_ratings = Team()
+        new_team_ratings = Team()
 
         for self_team_current_player, previous_player_rating in self_team.player_rating():
             mean_multiplier = (previous_player_rating.stdev ** 2.0 + tau_squared) / c
@@ -67,9 +61,9 @@ class TwoTeamTrueSkillCalculator(SkillCalculator):
                 (previous_player_rating.stdev ** 2.0 + tau_squared) * (1.0 - w * std_dev_multiplier)
             )
 
-            new_player_ratings[self_team_current_player] = Rating(new_mean, new_std_dev)
+            new_team_ratings[self_team_current_player] = Rating(new_mean, new_std_dev)
 
-        return new_player_ratings
+        return new_team_ratings
 
     def calculate_match_quality(self, game_info, teams):
         self.validate_team_count_and_players_count_per_team(teams)

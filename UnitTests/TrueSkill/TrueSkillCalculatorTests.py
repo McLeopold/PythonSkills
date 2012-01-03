@@ -1,9 +1,8 @@
 import unittest
-from Skills.Player import Player
 from Skills.GameInfo import GameInfo
-from Skills.Team import Team
 from Skills.Teams import Teams
-
+from Skills.Numerics.Matrix import Matrix
+    
 class TrueSkillCalculatorTests(unittest.TestCase):
 
     ERROR_TOLERANCE_TRUESKILL = 0.085
@@ -461,8 +460,9 @@ class TrueSkillCalculatorTests(unittest.TestCase):
 
         new_ratings = calculator.calculate_new_ratings(game_info, teams)
 
-        # current matrix implementation is too slow for this
-        #self.assertMatchQuality(0.000, calculator.calculate_match_quality(game_info, teams))
+        # naive matrix implementation too slow for this
+        if not hasattr(Matrix, 'is_square'):
+            self.assertMatchQuality(0.000, calculator.calculate_match_quality(game_info, teams))
 
         self.assertRating(40.53945776946920, 5.27581643889050, new_ratings.rating_by_id(1))
         self.assertRating(36.80951229454210, 4.71121217610266, new_ratings.rating_by_id(2))
