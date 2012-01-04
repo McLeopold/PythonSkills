@@ -2,8 +2,6 @@ import unittest
 from Skills.GameInfo import GameInfo
 from Skills.Elo.EloCalculator import EloCalculator
 from Skills.Teams import Teams
-from Skills.Rating import RatingFactory
-from Skills.Elo.EloRating import EloRating
 
 class CalculatorTests():
 
@@ -24,7 +22,6 @@ class CalculatorTests():
 class EloTests(unittest.TestCase, CalculatorTests):
 
     def setUp(self):
-        RatingFactory.rating_class = EloRating
         self.calculator = EloCalculator()
 
     def test_one_on_one(self):
