@@ -1,13 +1,11 @@
 import unittest
+from UnitTests.TrueSkill.TrueSkillCalculatorTests import TwoPlayerCalculatorTests
 from Skills.TrueSkill.TwoPlayerTrueSkillCalculator import TwoPlayerTrueSkillCalculator
-from UnitTests.TrueSkill.TrueSkillCalculatorTests import TrueSkillCalculatorTests
 
-class TwoPlayerTrueSkillCalculatorTest(TrueSkillCalculatorTests):
+class TwoTeamTrueSkillCalculatorTest(unittest.TestCase, TwoPlayerCalculatorTests):
 
-    def testTwoPlayerTrueSkillCalculator(self):
-        calculator = TwoPlayerTrueSkillCalculator()
-
-        self.allTwoPlayerScenarios(calculator)
+    def setUp(self):
+        self.calculator = TwoPlayerTrueSkillCalculator()
 
 if __name__ == "__main__":
     unittest.main()
