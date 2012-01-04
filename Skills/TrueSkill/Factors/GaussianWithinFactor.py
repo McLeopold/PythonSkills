@@ -1,4 +1,4 @@
-from GaussianFactor import GaussianFactor, Gauss
+from GaussianFactor import GaussianFactor, Gaussian
 from Skills.TrueSkill.TruncatedGaussianCorrectionFunctions import TruncatedGaussianCorrectionFunctions
 from math import log, sqrt
 from copy import copy
@@ -19,10 +19,10 @@ class GaussianWithinFactor(GaussianFactor):
         message_from_variable = marginal / message
         mean = message_from_variable.mean
         std = message_from_variable.stdev
-        z = (Gauss.cumulative_to((self.epsilon - mean) / std) -
-             Gauss.cumulative_to((-self.epsilon - mean) / std))
+        z = (Gaussian.cumulative_to((self.epsilon - mean) / std) -
+             Gaussian.cumulative_to((-self.epsilon - mean) / std))
 
-        return -Gauss.log_product_normalization(message_from_variable, message) + log(z)
+        return -Gaussian.log_product_normalization(message_from_variable, message) + log(z)
 
     def update_message_variable(self, message, variable):
         old_marginal = copy(variable.value)
@@ -42,7 +42,7 @@ class GaussianWithinFactor(GaussianFactor):
         new_precision = c / denominator
         new_precision_mean = (d + sqrt_c * TruncatedGaussianCorrectionFunctions.v_within_margin(d_on_sqrt_c, epsilon_times_sqrt_c)) / denominator
 
-        new_marginal = Gauss.from_precision_mean(new_precision_mean, new_precision)
+        new_marginal = Gaussian.from_precision_mean(new_precision_mean, new_precision)
         new_message = (old_message * new_marginal) / old_marginal
 
         message.value = new_message

@@ -1,7 +1,9 @@
-from Skills.SkillCalculator import SkillCalculator
 from Skills.Numerics.Range import Range
-from Skills.TrueSkill.TrueSkillFactorGraph import TrueSkillFactorGraph
 from Skills.Numerics.Matrix import DiagonalMatrix, Matrix
+from Skills.Rating import RatingFactory
+from Skills.GaussianRating import GaussianRating
+from Skills.SkillCalculator import SkillCalculator
+from Skills.TrueSkill.TrueSkillFactorGraph import TrueSkillFactorGraph
 from math import sqrt, exp
 
 class FactorGraphTrueSkillCalculator(SkillCalculator):
@@ -11,6 +13,7 @@ class FactorGraphTrueSkillCalculator(SkillCalculator):
 
     def __init__(self):
         SkillCalculator.__init__(self, Range.at_least(2), Range.at_least(1), True, True)
+        RatingFactory.rating_class = GaussianRating
 
     def calculate_new_ratings(self, game_info, teams):
         self.validate_team_count_and_players_count_per_team(teams)

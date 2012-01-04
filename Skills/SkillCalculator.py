@@ -13,7 +13,7 @@ class SkillCalculator():
         self.allow_partial_play = allow_partial_play
         self.allow_partial_update = allow_partial_update
 
-    def calculate_new_ratings(self, game_info, teams_of_player_to_ratings):
+    def calculate_new_ratings(self, game_info, teams):
         raise NotImplementedError("calculate_new_ratings not implemented")
 
     def validate_team_count_and_players_count_per_team(self, teams):

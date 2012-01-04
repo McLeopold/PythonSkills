@@ -1,4 +1,4 @@
-from GaussianFactor import GaussianFactor, Gauss
+from GaussianFactor import GaussianFactor, Gaussian
 from Skills.TrueSkill.TruncatedGaussianCorrectionFunctions import TruncatedGaussianCorrectionFunctions
 from copy import copy
 from math import log, sqrt
@@ -15,8 +15,8 @@ class GaussianGreaterThanFactor(GaussianFactor):
         message = self.messages[0].value
         message_from_variable = marginal / message
 
-        return (-Gauss.log_product_normalization(message_from_variable, message) +
-                log(Gauss.cumulative_to((message_from_variable.mean - self.epsilon)
+        return (-Gaussian.log_product_normalization(message_from_variable, message) +
+                log(Gaussian.cumulative_to((message_from_variable.mean - self.epsilon)
                                                        / message_from_variable.stdev)))
 
     def update_message_variable(self, message, variable):
@@ -38,7 +38,7 @@ class GaussianGreaterThanFactor(GaussianFactor):
         new_precision = c / denom
         new_precision_mean = (d + sqrt_c * TruncatedGaussianCorrectionFunctions.v_exceeds_margin(d_on_sqrt_c, epsilon_times_sqrt_c)) / denom
 
-        new_marginal = Gauss.from_precision_mean(new_precision_mean, new_precision)
+        new_marginal = Gaussian.from_precision_mean(new_precision_mean, new_precision)
         new_message = (old_message * new_marginal) / old_marginal
 
         message.value = new_message

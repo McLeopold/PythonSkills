@@ -1,14 +1,16 @@
-from Skills.SkillCalculator import SkillCalculator
 from Skills.Numerics.Range import Range
-from Skills.TrueSkill.TruncatedGaussianCorrectionFunctions import TruncatedGaussianCorrectionFunctions
-from Skills.Rating import Rating
+from Skills.Rating import RatingFactory
+from Skills.GaussianRating import GaussianRating
 from Skills.Team import Team
 from Skills.Teams import Teams
+from Skills.SkillCalculator import SkillCalculator
+from Skills.TrueSkill.TruncatedGaussianCorrectionFunctions import TruncatedGaussianCorrectionFunctions
 from math import sqrt, exp
 
 class TwoPlayerTrueSkillCalculator(SkillCalculator):
     def __init__(self):
         SkillCalculator.__init__(self, Range.exactly(2), Range.exactly(1))
+        RatingFactory.rating_class = GaussianRating
 
     def calculate_new_ratings(self, game_info, teams):
         self.validate_team_count_and_players_count_per_team(teams)
@@ -62,7 +64,7 @@ class TwoPlayerTrueSkillCalculator(SkillCalculator):
         new_mean = self_rating.mean + (rank_multiplier * mean_multiplier * v)
         new_std_dev = sqrt(variance_with_dynamics * (1.0 - w * std_dev_multiplier))
 
-        return Rating(new_mean, new_std_dev)
+        return GaussianRating(new_mean, new_std_dev)
 
     def calculate_match_quality(self, game_info, teams):
         self.validate_team_count_and_players_count_per_team(teams)

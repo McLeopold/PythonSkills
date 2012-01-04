@@ -1,4 +1,4 @@
-from Skills.Numerics.Gauss import Gauss
+from Skills.Numerics.Gaussian import Gaussian
 
 class TruncatedGaussianCorrectionFunctions():
     '''
@@ -11,10 +11,10 @@ class TruncatedGaussianCorrectionFunctions():
 
     @staticmethod
     def v_exceeds_margin(team_performance_difference, draw_margin):
-        denominator = Gauss.cumulative_to(team_performance_difference - draw_margin)
+        denominator = Gaussian.cumulative_to(team_performance_difference - draw_margin)
         if (denominator < 2.22275874e-162):
             return -team_performance_difference + draw_margin
-        return Gauss.at(team_performance_difference - draw_margin) / denominator
+        return Gaussian.at(team_performance_difference - draw_margin) / denominator
 
     @staticmethod
     def w_exceeds_margin_scaled(team_performance_difference, draw_margin, c):
@@ -22,7 +22,7 @@ class TruncatedGaussianCorrectionFunctions():
 
     @staticmethod
     def w_exceeds_margin(team_performance_difference, draw_margin):
-        denominator = Gauss.cumulative_to(team_performance_difference - draw_margin)
+        denominator = Gaussian.cumulative_to(team_performance_difference - draw_margin)
         if denominator < 2.222758749e-162:
             if team_performance_difference < 0.0:
                 return 1.0
@@ -38,16 +38,16 @@ class TruncatedGaussianCorrectionFunctions():
     def v_within_margin(team_performance_difference, draw_margin):
         team_performance_difference_abs = abs(team_performance_difference)
         denominator = (
-            Gauss.cumulative_to(draw_margin - team_performance_difference_abs) -
-            Gauss.cumulative_to(-draw_margin - team_performance_difference_abs))
+            Gaussian.cumulative_to(draw_margin - team_performance_difference_abs) -
+            Gaussian.cumulative_to(-draw_margin - team_performance_difference_abs))
 
         if denominator < 2.222758749e-162:
             if team_performance_difference < 0.0:
                 return -team_performance_difference - draw_margin
             return -team_performance_difference + draw_margin
 
-        numerator = (Gauss.at(-draw_margin - team_performance_difference_abs) -
-                     Gauss.at(draw_margin - team_performance_difference_abs))
+        numerator = (Gaussian.at(-draw_margin - team_performance_difference_abs) -
+                     Gaussian.at(draw_margin - team_performance_difference_abs))
 
         if team_performance_difference < 0.0:
             return -numerator / denominator
@@ -60,8 +60,8 @@ class TruncatedGaussianCorrectionFunctions():
     @staticmethod
     def w_within_margin(team_performance_difference, draw_margin):
         team_performance_difference_abs = abs(team_performance_difference)
-        denominator = (Gauss.cumulative_to(draw_margin - team_performance_difference_abs) -
-                       Gauss.cumulative_to(-draw_margin - team_performance_difference_abs))
+        denominator = (Gaussian.cumulative_to(draw_margin - team_performance_difference_abs) -
+                       Gaussian.cumulative_to(-draw_margin - team_performance_difference_abs))
 
         if denominator < 2.222758749e-162:
             return 1.0
@@ -71,7 +71,7 @@ class TruncatedGaussianCorrectionFunctions():
         return (vt ** 2 +
                 (
                     (draw_margin - team_performance_difference_abs) *
-                    Gauss.at(draw_margin - team_performance_difference_abs) -
+                    Gaussian.at(draw_margin - team_performance_difference_abs) -
                     (-draw_margin - team_performance_difference_abs) *
-                    Gauss.at(-draw_margin - team_performance_difference_abs)) / denominator)
+                    Gaussian.at(-draw_margin - team_performance_difference_abs)) / denominator)
 

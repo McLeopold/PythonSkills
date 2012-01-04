@@ -1,4 +1,4 @@
-from GaussianFactor import GaussianFactor, Gauss
+from GaussianFactor import GaussianFactor, Gaussian
 from copy import copy
 
 class GaussianLikelihoodFactorError(Exception):
@@ -19,7 +19,7 @@ class GaussianLikelihoodFactor(GaussianFactor):
         self.create_variable_to_message_binding(variable2)
 
     def log_normalization(self):
-        return Gauss.log_ratio_normalization(
+        return Gaussian.log_ratio_normalization(
             self.variables[0].value,
             self.messages[0].value
         )
@@ -33,7 +33,7 @@ class GaussianLikelihoodFactor(GaussianFactor):
 
         a = self.precision / (self.precision + marginal2.precision - message2_value.precision)
 
-        new_message = Gauss.from_precision_mean(
+        new_message = Gaussian.from_precision_mean(
             a * (marginal2.precision_mean - message2_value.precision_mean),
             a * (marginal2.precision - message2_value.precision))
 

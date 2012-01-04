@@ -1,5 +1,5 @@
 from Player import Player
-from Rating import Rating
+from Rating import RatingFactory
 
 class TeamError(Exception):
     pass
@@ -38,14 +38,14 @@ class Team(dict):
                     player_rating_tuples = player
                 try:
                     for p, rating in player_rating_tuples:
-                        self.add_player(Player.ensure_player(p), Rating.ensure_rating(rating))
+                        self.add_player(Player.ensure_player(p), RatingFactory.ensure_rating(rating))
                 except (TypeError, ValueError):
                     raise TeamError("Improper player dict or list")
             else:
-                self.add_player(Player.ensure_player(player), Rating.ensure_rating(rating))
+                self.add_player(Player.ensure_player(player), RatingFactory.ensure_rating(rating))
 
     def add_player(self, player, rating):
-        self[Player.ensure_player(player)] = Rating.ensure_rating(rating)
+        self[Player.ensure_player(player)] = RatingFactory.ensure_rating(rating)
         return self
 
     def player_by_id(self, player_id):

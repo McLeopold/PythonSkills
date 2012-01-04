@@ -1,5 +1,3 @@
-from Numerics.Gauss import Gauss
-
 class RatingError(Exception):
     pass
 
@@ -8,46 +6,55 @@ class Rating():
     Constructs a rating.
     '''
 
-    def __init__(self, mean,
-                       stdev):
+    def __init__(self, mean):
         try:
             self.mean = float(mean)
-            self.stdev = float(stdev)
         except ValueError:
-            raise RatingError("Rating values must be numeric")
+            raise RatingError("Rating mean value must be numeric")
 
     def __repr__(self):
-        return "Rating(%s, %s)" % (self.mean, self.stdev)
+        return "Rating(%s)" % (self.mean)
 
     def __str__(self):
-        return "mean=%.5f, stdev=%.5f" % (self.mean, self.stdev)
+        return "mean=%.5f" % (self.mean)
 
-    def conservative_rating(self, game_info):
-        return self.mean - game_info.conservative_stdev_multiplier * self.stdev
+    def __pow__(self, other):
+        return self.mean ** other
 
-    def partial_update(self, prior, full_posterior, update_percentage):
-        prior_gaussian = Gauss(prior.mean, prior.stdev)
-        posterior_gaussian = Gauss(full_posterior.mean, full_posterior.stdev)
+    def __rpow__(self, other):
+        return other ** self.mean
 
-        precision_difference = posterior_gaussian.precision - prior_gaussian.precision
-        partial_precision_difference = update_percentage * precision_difference
+    def __div__(self, other):
+        return self.mean / other
 
-        precision_mean_difference = posterior_gaussian.precision_mean - prior_gaussian.precision_mean
-        partial_precision_mean_difference = update_percentage * precision_mean_difference
+    def __add__(self, other):
+        try:
+            return Rating(self.mean + other.mean)
+        except AttributeError:
+            return self.mean + other
 
-        partial_posterior_gaussian = Gauss.from_precision_mean(
-            prior_gaussian.precision_mean + partial_precision_mean_difference,
-            prior_gaussian.precision + partial_precision_difference)
-
-        return Rating(partial_posterior_gaussian.mean, partial_posterior_gaussian.stdev)
+    def __sub__(self, other):
+        try:
+            return Rating(self.mean - other.mean)
+        except AttributeError:
+            return self.mean - other
 
     @staticmethod
     def ensure_rating(rating):
-        if (not hasattr(rating, 'mean') or
-                not hasattr(rating, 'stdev')):
+        if (not hasattr(rating, 'mean')):
             try:
-                return Rating(*rating)
+                return Rating(rating)
             except TypeError:
-                raise RatingError("rating must be a sequence of length 2 or 3 or a Rating object")
+                raise RatingError("Rating was not given the correct amount of arguments")
         else:
             return rating
+
+class RatingFactory(object):
+    rating_class = Rating
+
+    def __new__(self):
+        return RatingFactory.rating_class()
+
+    @staticmethod
+    def ensure_rating(rating):
+        return RatingFactory.rating_class.ensure_rating(rating)

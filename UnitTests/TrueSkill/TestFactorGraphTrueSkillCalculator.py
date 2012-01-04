@@ -4,11 +4,11 @@ from UnitTests.TrueSkill.TrueSkillCalculatorTests import TwoPlayerCalculatorTest
 import logging
 from Skills.FactorGraphs.Schedule import Schedule
 
-class FactorGraphTeamTrueSkillCalculatorTest(unittest.TestCase,
-                                             TwoPlayerCalculatorTests,
-                                             TwoTeamCalculatorTests,
-                                             MultipleTeamCalculatorTests,
-                                             PartialPlayCalculatorTests):
+class FactorGraphTrueSkillCalculatorTest(unittest.TestCase,
+                                         TwoPlayerCalculatorTests,
+                                         TwoTeamCalculatorTests,
+                                         MultipleTeamCalculatorTests,
+                                         PartialPlayCalculatorTests):
 
 
     def setUp(self):

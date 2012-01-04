@@ -1,7 +1,7 @@
 from Skills.FactorGraphs.FactorGraph import FactorGraph
 from Skills.TrueSkill.Layers.PlayerPriorValuesToSkillsLayer import PlayerPriorValuesToSkillsLayer
 from Skills.FactorGraphs.VariableFactory import VariableFactory
-from Skills.Numerics.Gauss import Gauss
+from Skills.Numerics.Gaussian import Gaussian
 from Skills.TrueSkill.Layers.PlayerSkillsToPerformancesLayer import PlayerSkillsToPerformancesLayer
 from Skills.TrueSkill.Layers.PlayerPerformancesToTeamPerformancesLayer import PlayerPerformancesToTeamPerformancesLayer
 from Skills.TrueSkill.Layers.IteratedTeamDifferencesInnerLayer import IteratedTeamDefferencesInnerLayer
@@ -9,17 +9,17 @@ from Skills.TrueSkill.Layers.TeamPerformancesToTeamPerformanceDifferencesLayer i
 from Skills.TrueSkill.Layers.TeamDifferencesComparisonLayer import TeamDifferencesComparisonLayer
 from Skills.FactorGraphs.FactorList import FactorList
 from Skills.FactorGraphs.Schedule import ScheduleSequence
-from Skills.Rating import Rating
 from Skills.Team import Team
 from Skills.Teams import Teams
 from math import exp
+from Skills.GaussianRating import GaussianRating
 
 class TrueSkillFactorGraph(FactorGraph):
 
     def __init__(self, game_info, teams, team_ranks):
         self.prior_layer = PlayerPriorValuesToSkillsLayer(self, teams)
         self.game_info = game_info
-        new_factory = VariableFactory(lambda: Gauss.from_precision_mean(0.0, 0.0))
+        new_factory = VariableFactory(lambda: Gaussian.from_precision_mean(0.0, 0.0))
         self.variable_factory = new_factory
         self.layers = [
             self.prior_layer,
@@ -74,8 +74,8 @@ class TrueSkillFactorGraph(FactorGraph):
         for current_team in self.prior_layer.output_variables_groups:
             team_results = Team()
             for current_player, current_player_rating in [(player.key, player.value) for player in current_team]:
-                new_rating = Rating(current_player_rating.mean,
-                                    current_player_rating.stdev)
+                new_rating = GaussianRating(current_player_rating.mean,
+                                            current_player_rating.stdev)
                 team_results[current_player] = new_rating
             results.append(team_results)
 
