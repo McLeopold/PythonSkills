@@ -1,25 +1,24 @@
 from Skills.Team import Team
 
-class TeamsError(Exception):
+class MatchError(Exception):
     pass
 
-class Teams(list):
-    # The actual values for the enum were chosen so that they also correspond to
-    # the multiplier for updates to means.
-    WIN = 1
-    DRAW = 0
-    LOSE = -1
+class Match(list):
+    WIN = 0
+    DRAW = 1
+    LOSE = 2
 
-    def __init__(self, *teams, **kwds):
-        for team in teams:
-            self.append(Team.ensure_team(team))
-        self.rank = kwds['rank'] if 'rank' in kwds else None
+    def __init__(self, teams=None, rank=None):
+        if teams is not None:
+            for team in teams:
+                self.append(Team.ensure_team(team))
+        self.rank = rank
 
     def __repr__(self):
         if self.rank:
-            return "Teams(%s, rank=%s)" % (str(list(self)), str(self.rank))
+            return "Match(%s, rank=%s)" % (str(list(self)), str(self.rank))
         else:
-            return "Teams(%s)" % str(list(self))
+            return "Match(%s)" % str(list(self))
 
     def add_team(self, team):
         self.append(Team.ensure_team(team))
@@ -42,12 +41,27 @@ class Teams(list):
                 if player.player_id == player_id:
                     return player, rating
 
+    def players(self):
+        for team in self:
+            for players in team.players():
+                yield players
+
+    def ratings(self):
+        for team in self:
+            for ratings in team.ratings():
+                yield ratings
+
+    def player_rating(self):
+        for team in self:
+            for player_rating in team.player_rating():
+                yield player_rating
+
     def sort(self):
         '''
         Performs an in-place sort of the items in accordance to the ranks in non-decreasing order
         '''
         if not self.rank:
-            raise TeamsError("Teams does not have a ranking")
+            raise MatchError("Match does not have a ranking")
 
         rank_sorted, teams_sorted = map(list, zip(*sorted(zip(self.rank, self))))
 
@@ -58,19 +72,20 @@ class Teams(list):
             for i, v in enumerate(rank_sorted):
                 self.rank[i] = v
 
-    def comparison(self, winner=True):
+    def comparison(self, team1=0, team2=1):
         if not self.rank:
-            TeamsError("Teams instance does not have a ranking")
-        elif len(self.rank) != 2:
-            TeamsError("Teams instance does not have exactly 2 teams")
+            MatchError("Match instance does not have a ranking")
         else:
-            if self.rank[0] < self.rank[1]:
-                return self.WIN if winner else self.LOSE
-            elif self.rank[0] > self.rank[1]:
-                return self.LOSE if winner else self.WIN
+            if self.rank[team1] < self.rank[team2]:
+                return self.WIN
+            elif self.rank[team1] > self.rank[team2]:
+                return self.LOSE
             else:
                 return self.DRAW
 
     @staticmethod
-    def FreeForAll(*players, **kwds):
-        return Teams(*[[player] for player in players], **kwds)
+    def ensure_match(match):
+        if not hasattr(match, 'rank'):
+            return Match(*match)
+        else:
+            return match

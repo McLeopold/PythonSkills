@@ -1,6 +1,6 @@
 from Schedule import ScheduleSequence
 
-class FactorGraphLayer():
+class FactorGraphLayer(object):
 
     def __init__(self, parent_graph):
         self._local_factors = []
@@ -18,7 +18,7 @@ class FactorGraphLayer():
         self._local_factors.append(factor)
 
     def build_layer(self):
-        raise NotImplementedError("build_layer not implemented")
+        raise NotImplementedError
 
     def create_prior_schedule(self):
         return None

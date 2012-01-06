@@ -5,7 +5,7 @@ from math import sqrt
 class GameInfoError(Exception):
     pass
 
-class GameInfo():
+class GameInfo(object):
     '''
     Parameters about the game for calculating the TrueSkill.
     '''

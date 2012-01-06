@@ -10,7 +10,7 @@ from Skills.TrueSkill.Layers.TeamDifferencesComparisonLayer import TeamDifferenc
 from Skills.FactorGraphs.FactorList import FactorList
 from Skills.FactorGraphs.Schedule import ScheduleSequence
 from Skills.Team import Team
-from Skills.Teams import Teams
+from Skills.Match import Match
 from math import exp
 from Skills.GaussianRating import GaussianRating
 
@@ -69,7 +69,7 @@ class TrueSkillFactorGraph(FactorGraph):
         return ScheduleSequence("Full schedule", full_schedule)
 
     def updated_ratings(self):
-        results = Teams()
+        results = Match()
 
         for current_team in self.prior_layer.output_variables_groups:
             team_results = Team()

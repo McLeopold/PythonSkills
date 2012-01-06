@@ -1,7 +1,7 @@
 class SkillCalculatorError(Exception):
     pass
 
-class SkillCalculator():
+class SkillCalculator(object):
     '''
     Base class for all skill calculator implementations.
     '''
@@ -14,7 +14,10 @@ class SkillCalculator():
         self.allow_partial_update = allow_partial_update
 
     def calculate_new_ratings(self, game_info, teams):
-        raise NotImplementedError("calculate_new_ratings not implemented")
+        raise NotImplementedError
+
+    def calculate_match_quality(self, game_info, match):
+        raise NotImplementedError
 
     def validate_team_count_and_players_count_per_team(self, teams):
         if len(teams) not in self.total_teams_allowed:

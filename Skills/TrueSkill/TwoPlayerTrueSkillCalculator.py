@@ -2,12 +2,17 @@ from Skills.Numerics.Range import Range
 from Skills.Rating import RatingFactory
 from Skills.GaussianRating import GaussianRating
 from Skills.Team import Team
-from Skills.Teams import Teams
+from Skills.Match import Match
 from Skills.SkillCalculator import SkillCalculator
 from Skills.TrueSkill.TruncatedGaussianCorrectionFunctions import TruncatedGaussianCorrectionFunctions
 from math import sqrt, exp
 
 class TwoPlayerTrueSkillCalculator(SkillCalculator):
+
+    score = {Match.WIN: 1.0,
+             Match.LOSE:-1.0,
+             Match.DRAW: 0.0}
+
     def __init__(self):
         SkillCalculator.__init__(self, Range.exactly(2), Range.exactly(1))
         RatingFactory.rating_class = GaussianRating
@@ -18,25 +23,20 @@ class TwoPlayerTrueSkillCalculator(SkillCalculator):
         # ensure sorted by rank
         teams.sort()
 
-        winning_team_players = teams[0].players()
-        winner = winning_team_players[0]
-        winner_previous_rating = teams[0][winner]
+        winner, winner_rating = teams[0].player_rating()[0]
+        loser, loser_rating = teams[1].player_rating()[0]
 
-        losing_team_players = teams[1].players()
-        loser = losing_team_players[0]
-        loser_previous_rating = teams[1][loser]
-
-        return Teams(Team(winner, self.calculate_new_rating(game_info,
-                                                            winner_previous_rating,
-                                                            loser_previous_rating,
-                                                            teams.comparison())),
-                     Team(loser, self.calculate_new_rating(game_info,
-                                                           loser_previous_rating,
-                                                           winner_previous_rating,
-                                                           teams.comparison(False))))
+        return Match([Team({winner: self.calculate_new_rating(game_info,
+                                                             winner_rating,
+                                                             loser_rating,
+                                                             teams.comparison(0, 1))}),
+                      Team({loser: self.calculate_new_rating(game_info,
+                                                            loser_rating,
+                                                            winner_rating,
+                                                            teams.comparison(1, 0))})])
 
     def calculate_new_rating(self, game_info, self_rating, opponent_rating, comparison):
-        if comparison == Teams.LOSE:
+        if comparison == Match.LOSE:
             mean_delta = opponent_rating.mean - self_rating.mean
         else:
             mean_delta = self_rating.mean - opponent_rating.mean
@@ -47,10 +47,10 @@ class TwoPlayerTrueSkillCalculator(SkillCalculator):
             2.0 * game_info.beta ** 2.0
         )
 
-        if comparison != Teams.DRAW:
+        if comparison != Match.DRAW:
             v = TruncatedGaussianCorrectionFunctions.v_exceeds_margin_scaled(mean_delta, game_info.draw_margin, c)
             w = TruncatedGaussianCorrectionFunctions.w_exceeds_margin_scaled(mean_delta, game_info.draw_margin, c)
-            rank_multiplier = float(comparison)
+            rank_multiplier = TwoPlayerTrueSkillCalculator.score[comparison]
         else:
             v = TruncatedGaussianCorrectionFunctions.v_within_margin_scaled(mean_delta, game_info.draw_margin, c)
             w = TruncatedGaussianCorrectionFunctions.w_within_margin_scaled(mean_delta, game_info.draw_margin, c)

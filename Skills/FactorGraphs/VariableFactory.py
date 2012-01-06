@@ -1,6 +1,6 @@
 from Variable import Variable, KeyedVariable
 
-class VariableFactory():
+class VariableFactory(object):
 
     def __init__(self, variable_prior_initializer):
         self.variable_prior_initializer = variable_prior_initializer

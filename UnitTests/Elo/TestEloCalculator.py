@@ -1,9 +1,9 @@
 import unittest
 from Skills.GameInfo import GameInfo
 from Skills.Elo.EloCalculator import EloCalculator
-from Skills.Teams import Teams
+from Skills.Match import Match
 
-class CalculatorTests():
+class CalculatorTests(object):
 
     ERROR_TOLERANCE_TRUESKILL = 0.085
     ERROR_TOLERANCE_MATCH_QUALITY = 0.0005
@@ -26,9 +26,9 @@ class EloTests(unittest.TestCase, CalculatorTests):
 
     def test_one_on_one(self):
         game_info = GameInfo()
-        teams = Teams.FreeForAll((1, 1200),
-                                 (2, 1200),
-                                 rank=[1, 2])
+        teams = Match([{1: 1200},
+                       {2: 1200}],
+                      [1, 2])
         new_ratings = self.calculator.calculate_new_ratings(game_info, teams)
 
         self.assertMatchQuality(1.0, self.calculator.calculate_match_quality(game_info, teams))

@@ -1,4 +1,4 @@
-class Schedule():
+class Schedule(object):
     log = None # can be set globally for all instances
 
     def __init__(self, name):
@@ -8,7 +8,7 @@ class Schedule():
         return self.name
 
     def visit(self, depth= -1, max_depth=0):
-        raise NotImplementedError("visit not implemented")
+        raise NotImplementedError
 
 class ScheduleStep(Schedule):
     def __init__(self, name, factor, index):

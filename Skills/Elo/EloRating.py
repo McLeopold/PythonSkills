@@ -10,7 +10,7 @@ class EloRating(Rating):
         try:
             self.k_factor = float(k_factor)
         except:
-            RatingError("EloRating stdev value must be numeric")
+            RatingError("EloRating k_factor value must be numeric")
 
     def __repr__(self):
         return "EloRating(%s, %s)" % (self.mean, self.k_factor)
@@ -26,7 +26,7 @@ class EloRating(Rating):
                 try:
                     return EloRating(*rating)
                 except TypeError:
-                    raise RatingError("EloRating must be a sequence of length 2 or 3 or a Rating object")
+                    raise RatingError("EloRating must be a sequence of length 1 or 2 or a EloRating object")
             else:
                 try:
                     return EloRating(rating)

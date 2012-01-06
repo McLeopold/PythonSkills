@@ -1,7 +1,7 @@
 class FactorError(Exception):
     pass
 
-class Factor():
+class Factor(object):
     def __init__(self, name):
         self.messages = []
         self.variables = []
@@ -24,7 +24,7 @@ class Factor():
             raise FactorError("message_index is an invalid index")
 
     def update_message_variable(self, message, variable):
-        raise NotImplementedError("update_message_variable is not implemented")
+        raise NotImplementedError
 
     def reset_marginals(self):
         for current_variable in self.message_to_variable_binding.values():

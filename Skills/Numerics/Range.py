@@ -1,7 +1,7 @@
 class RangeError(Exception):
     pass
 
-class Range():
+class Range(object):
     def __init__(self, minimum, maximum):
         if minimum > maximum:
             raise RangeError("minimum > maximum")

@@ -1,7 +1,7 @@
 class PlayerError(Exception):
     pass
 
-class Player():
+class Player(object):
     '''
     Constructs a player.
     '''

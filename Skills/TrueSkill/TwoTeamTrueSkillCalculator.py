@@ -2,7 +2,7 @@ from Skills.Numerics.Range import Range
 from Skills.Rating import RatingFactory
 from Skills.GaussianRating import GaussianRating
 from Skills.Team import Team
-from Skills.Teams import Teams
+from Skills.Match import Match
 from Skills.SkillCalculator import SkillCalculator
 from Skills.TrueSkill.TruncatedGaussianCorrectionFunctions import TruncatedGaussianCorrectionFunctions
 from math import sqrt, exp
@@ -12,6 +12,10 @@ class TwoTeamTrueSkillCalculator(SkillCalculator):
     Calculates new ratings for only two teams where each team has 1 or more players.
     '''
 
+    score = {Match.WIN: 1.0,
+             Match.LOSE:-1.0,
+             Match.DRAW: 0.0}
+
     def __init__(self):
         SkillCalculator.__init__(self, Range.exactly(2), Range.at_least(1))
         RatingFactory.rating_class = GaussianRating
@@ -20,16 +24,16 @@ class TwoTeamTrueSkillCalculator(SkillCalculator):
         self.validate_team_count_and_players_count_per_team(teams)
         teams.sort()
 
-        return Teams(self.calculate_new_team_ratings(game_info, teams[0], teams[1],
-                                                     teams.comparison()),
-                     self.calculate_new_team_ratings(game_info, teams[1], teams[0],
-                                                     teams.comparison(False)))
+        return Match([self.calculate_new_team_ratings(game_info, teams[0], teams[1],
+                                                      teams.comparison(0, 1)),
+                      self.calculate_new_team_ratings(game_info, teams[1], teams[0],
+                                                      teams.comparison(1, 0))])
 
     def calculate_new_team_ratings(self, game_info, self_team, other_team,
                                    self_to_other_team_comparison):
         self_mean_sum = sum(rating.mean for rating in self_team.ratings())
         other_team_mean_sum = sum(rating.mean for rating in other_team.ratings())
-        if self_to_other_team_comparison == Teams.LOSE:
+        if self_to_other_team_comparison == Match.LOSE:
             mean_delta = other_team_mean_sum - self_mean_sum
         else:
             mean_delta = self_mean_sum - other_team_mean_sum
@@ -41,10 +45,10 @@ class TwoTeamTrueSkillCalculator(SkillCalculator):
         )
         tau_squared = game_info.dynamics_factor ** 2
 
-        if self_to_other_team_comparison != Teams.DRAW:
+        if self_to_other_team_comparison != Match.DRAW:
             v = TruncatedGaussianCorrectionFunctions.v_exceeds_margin_scaled(mean_delta, game_info.draw_margin, c)
             w = TruncatedGaussianCorrectionFunctions.w_exceeds_margin_scaled(mean_delta, game_info.draw_margin, c)
-            rank_multiplier = 1.0 * self_to_other_team_comparison
+            rank_multiplier = TwoTeamTrueSkillCalculator.score[self_to_other_team_comparison]
         else:
             v = TruncatedGaussianCorrectionFunctions.v_within_margin_scaled(mean_delta, game_info.draw_margin, c)
             w = TruncatedGaussianCorrectionFunctions.w_within_margin_scaled(mean_delta, game_info.draw_margin, c)

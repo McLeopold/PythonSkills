@@ -1,8 +1,8 @@
 from Skills.GameInfo import GameInfo
-from Skills.Teams import Teams
+from Skills.Match import Match
 from Skills.Numerics.Matrix import Matrix
 
-class CalculatorTests():
+class CalculatorTests(object):
 
     ERROR_TOLERANCE_TRUESKILL = 0.085
     ERROR_TOLERANCE_MATCH_QUALITY = 0.0005
@@ -25,9 +25,9 @@ class TwoPlayerCalculatorTests(CalculatorTests):
 
     def test_two_player_not_drawn(self):
         game_info = GameInfo()
-        teams = Teams.FreeForAll((1, (25.0, 25.0 / 3)),
-                                 (2, (25.0, 25.0 / 3)),
-                                 rank=[1, 2])
+        teams = Match([{1: (25.0, 25.0 / 3)},
+                       {2: (25.0, 25.0 / 3)}],
+                      [1, 2])
 
         new_ratings = self.calculator.calculate_new_ratings(game_info, teams)
 
@@ -38,8 +38,8 @@ class TwoPlayerCalculatorTests(CalculatorTests):
 
     def test_two_player_drawn(self):
         game_info = GameInfo()
-        teams = Teams([(1, (25.0, 25.0 / 3))],
-                      [(2, (25.0, 25.0 / 3))],
+        teams = Match([{1: (25.0, 25.0 / 3)},
+                       {2: (25.0, 25.0 / 3)}],
                       rank=[1, 1])
 
         new_ratings = self.calculator.calculate_new_ratings(game_info, teams)
@@ -51,8 +51,8 @@ class TwoPlayerCalculatorTests(CalculatorTests):
 
     def test_two_player_chess_not_drawn(self):
         game_info = GameInfo(1200.0, 1200.0 / 3, 200.0, 1200.0 / 300, 0.03)
-        teams = Teams([(1, (1301.0007, 42.9232))],
-                      [(2, (1188.7560, 42.5570))],
+        teams = Match([{1: (1301.0007, 42.9232)},
+                       {2: (1188.7560, 42.5570)}],
                       rank=[1, 2])
 
         new_ratings = self.calculator.calculate_new_ratings(game_info, teams)
@@ -62,8 +62,8 @@ class TwoPlayerCalculatorTests(CalculatorTests):
 
     def test_one_on_one_massive_upset_drawn(self):
         game_info = GameInfo()
-        teams = Teams([(1, (25.0, 25.0 / 3))],
-                      [(2, (50.0, 25.0 / 2))],
+        teams = Match([{1: (25.0, 25.0 / 3)},
+                       {2: (50.0, 25.0 / 2)}],
                       rank=[1, 1])
 
         new_ratings = self.calculator.calculate_new_ratings(game_info, teams)
@@ -79,8 +79,11 @@ class TwoTeamCalculatorTests(object):
 
     def test_two_on_two(self):
         game_info = GameInfo()
-        teams = Teams([(1, (25.0, 25.0 / 3)), (2, (25.0, 25.0 / 3))],
-                      [(3, (25.0, 25.0 / 3)), (4, (25.0, 25.0 / 3))],
+        teams = Match([{1: (25.0, 25.0 / 3),
+                        2: (25.0, 25.0 / 3)},
+
+                       {3: (25.0, 25.0 / 3),
+                        4: (25.0, 25.0 / 3)}],
                       rank=[1, 2])
 
         new_ratings = self.calculator.calculate_new_ratings(game_info, teams)
@@ -94,8 +97,11 @@ class TwoTeamCalculatorTests(object):
 
     def test_two_on_two_draw(self):
         game_info = GameInfo()
-        teams = Teams([(1, (25.0, 25.0 / 3)), (2, (25.0, 25.0 / 3))],
-                      [(3, (25.0, 25.0 / 3)), (4, (25.0, 25.0 / 3))],
+        teams = Match([{1: (25.0, 25.0 / 3),
+                        2: (25.0, 25.0 / 3)},
+
+                       {3: (25.0, 25.0 / 3),
+                        4: (25.0, 25.0 / 3)}],
                       rank=[1, 1])
 
         new_ratings = self.calculator.calculate_new_ratings(game_info, teams)
@@ -109,8 +115,11 @@ class TwoTeamCalculatorTests(object):
 
     def test_two_on_two_unbalanced_draw(self):
         game_info = GameInfo()
-        teams = Teams([(1, (15.0, 8.0)), (2, (20.0, 6.0))],
-                      [(3, (25.0, 4.0)), (4, (30.0, 3.0))],
+        teams = Match([{1: (15.0, 8.0),
+                        2: (20.0, 6.0)},
+
+                       {3: (25.0, 4.0),
+                        4: (30.0, 3.0)}],
                       rank=[1, 1])
 
         new_ratings = self.calculator.calculate_new_ratings(game_info, teams)
@@ -124,8 +133,11 @@ class TwoTeamCalculatorTests(object):
 
     def test_two_on_two_upset(self):
         game_info = GameInfo()
-        teams = Teams([(1, (20.0, 8.0)), (2, (25.0, 6.0))],
-                      [(3, (35.0, 7.0)), (4, (40.0, 5.0))],
+        teams = Match([{1: (20.0, 8.0),
+                        2: (25.0, 6.0)},
+
+                       {3: (35.0, 7.0),
+                        4: (40.0, 5.0)}],
                       rank=[1, 2])
 
         new_ratings = self.calculator.calculate_new_ratings(game_info, teams)
@@ -139,15 +151,15 @@ class TwoTeamCalculatorTests(object):
 
     def test_four_on_four(self):
         game_info = GameInfo()
-        teams = Teams([(1, (25.0, 25.0 / 3)),
-                       (2, (25.0, 25.0 / 3)),
-                       (3, (25.0, 25.0 / 3)),
-                       (4, (25.0, 25.0 / 3))],
+        teams = Match([{1: (25.0, 25.0 / 3),
+                        2: (25.0, 25.0 / 3),
+                        3: (25.0, 25.0 / 3),
+                        4: (25.0, 25.0 / 3)},
 
-                      [(5, (25.0, 25.0 / 3)),
-                       (6, (25.0, 25.0 / 3)),
-                       (7, (25.0, 25.0 / 3)),
-                       (8, (25.0, 25.0 / 3))],
+                       {5: (25.0, 25.0 / 3),
+                        6: (25.0, 25.0 / 3),
+                        7: (25.0, 25.0 / 3),
+                        8: (25.0, 25.0 / 3)}],
                       rank=[1, 2])
 
         new_ratings = self.calculator.calculate_new_ratings(game_info, teams)
@@ -165,8 +177,8 @@ class TwoTeamCalculatorTests(object):
 
     def test_one_on_two(self):
         game_info = GameInfo()
-        teams = Teams([(1, (25.0, 25.0 / 3))],
-                      [(2, (25.0, 25.0 / 3)), (3, (25.0, 25.0 / 3))],
+        teams = Match([{1: (25.0, 25.0 / 3)},
+                       {2: (25.0, 25.0 / 3), 3: (25.0, 25.0 / 3)}],
                       rank=[1, 2])
 
         new_ratings = self.calculator.calculate_new_ratings(game_info, teams)
@@ -179,8 +191,8 @@ class TwoTeamCalculatorTests(object):
 
     def test_one_on_two_somewhat_balanced(self):
         game_info = GameInfo()
-        teams = Teams([(1, (40.0, 6.0))],
-                      [(2, (20.0, 7.0)), (3, (25.0, 8.0))],
+        teams = Match([{1: (40.0, 6.0)},
+                       {2: (20.0, 7.0), 3: (25.0, 8.0)}],
                       rank=[1, 2])
 
         new_ratings = self.calculator.calculate_new_ratings(game_info, teams)
@@ -193,8 +205,8 @@ class TwoTeamCalculatorTests(object):
 
     def test_one_on_three(self):
         game_info = GameInfo()
-        teams = Teams([(1, (25.0, 25.0 / 3))],
-                      [(2, (25.0, 25.0 / 3)), (3, (25.0, 25.0 / 3)), (4, (25.0, 25.0 / 3))],
+        teams = Match([{1: (25.0, 25.0 / 3)},
+                       {2: (25.0, 25.0 / 3), 3: (25.0, 25.0 / 3), 4: (25.0, 25.0 / 3)}],
                       rank=[1, 2])
 
         new_ratings = self.calculator.calculate_new_ratings(game_info, teams)
@@ -208,8 +220,8 @@ class TwoTeamCalculatorTests(object):
 
     def test_one_on_two_draw(self):
         game_info = GameInfo()
-        teams = Teams([(1, (25.0, 25.0 / 3))],
-                      [(2, (25.0, 25.0 / 3)), (3, (25.0, 25.0 / 3))],
+        teams = Match([{1: (25.0, 25.0 / 3)},
+                       {2: (25.0, 25.0 / 3), 3: (25.0, 25.0 / 3)}],
                       rank=[1, 1])
 
         new_ratings = self.calculator.calculate_new_ratings(game_info, teams)
@@ -222,8 +234,8 @@ class TwoTeamCalculatorTests(object):
 
     def test_one_on_three_draw(self):
         game_info = GameInfo()
-        teams = Teams([(1, (25.0, 25.0 / 3))],
-                      [(2, (25.0, 25.0 / 3)), (3, (25.0, 25.0 / 3)), (4, (25.0, 25.0 / 3))],
+        teams = Match([{1: (25.0, 25.0 / 3)},
+                       {2: (25.0, 25.0 / 3), 3: (25.0, 25.0 / 3), 4: (25.0, 25.0 / 3)}],
                       rank=[1, 1])
 
         new_ratings = self.calculator.calculate_new_ratings(game_info, teams)
@@ -237,14 +249,14 @@ class TwoTeamCalculatorTests(object):
 
     def test_one_on_seven(self):
         game_info = GameInfo()
-        teams = Teams([(1, (25.0, 25.0 / 3))],
-                      [(2, (25.0, 25.0 / 3)),
-                       (3, (25.0, 25.0 / 3)),
-                       (4, (25.0, 25.0 / 3)),
-                       (5, (25.0, 25.0 / 3)),
-                       (6, (25.0, 25.0 / 3)),
-                       (7, (25.0, 25.0 / 3)),
-                       (8, (25.0, 25.0 / 3))],
+        teams = Match([{1: (25.0, 25.0 / 3)},
+                       {2: (25.0, 25.0 / 3),
+                        3: (25.0, 25.0 / 3),
+                        4: (25.0, 25.0 / 3),
+                        5: (25.0, 25.0 / 3),
+                        6: (25.0, 25.0 / 3),
+                        7: (25.0, 25.0 / 3),
+                        8: (25.0, 25.0 / 3)}],
                       rank=[1, 2])
 
         new_ratings = self.calculator.calculate_new_ratings(game_info, teams)
@@ -262,8 +274,8 @@ class TwoTeamCalculatorTests(object):
 
     def test_three_on_two(self):
         game_info = GameInfo()
-        teams = Teams([(1, (28.0, 7.0)), (2, (27.0, 6.0)), (3, (26.0, 5.0))],
-                      [(4, (30.0, 4.0)), (5, (31.0, 3.0))],
+        teams = Match([{1: (28.0, 7.0), 2: (27.0, 6.0), 3: (26.0, 5.0)},
+                       {4: (30.0, 4.0), 5: (31.0, 3.0)}],
                       rank=[1, 2])
 
         new_ratings = self.calculator.calculate_new_ratings(game_info, teams)
@@ -281,16 +293,16 @@ class MultipleTeamCalculatorTests(CalculatorTests):
 
     def test_two_on_four_on_two_win_draw(self):
         game_info = GameInfo()
-        teams = Teams([(1, (40.0, 4.0)),
-                       (2, (45.0, 3.0))],
+        teams = Match([{1: (40.0, 4.0),
+                        2: (45.0, 3.0)},
 
-                      [(3, (20.0, 7.0)),
-                       (4, (19.0, 6.0)),
-                       (5, (30.0, 9.0)),
-                       (6, (10.0, 4.0))],
+                       {3: (20.0, 7.0),
+                        4: (19.0, 6.0),
+                        5: (30.0, 9.0),
+                        6: (10.0, 4.0)},
 
-                      [(7, (50.0, 5.0)),
-                       (8, (30.0, 2.0))],
+                       {7: (50.0, 5.0),
+                        8: (30.0, 2.0)}],
                       rank=[1, 2, 2])
 
         new_ratings = self.calculator.calculate_new_ratings(game_info, teams)
@@ -308,9 +320,9 @@ class MultipleTeamCalculatorTests(CalculatorTests):
 
     def test_three_teams_of_one_not_drawn(self):
         game_info = GameInfo()
-        teams = Teams([(1, (25.0, 25.0 / 3))],
-                      [(2, (25.0, 25.0 / 3))],
-                      [(3, (25.0, 25.0 / 3))],
+        teams = Match([{1: (25.0, 25.0 / 3)},
+                       {2: (25.0, 25.0 / 3)},
+                       {3: (25.0, 25.0 / 3)}],
                       rank=[1, 2, 3])
 
         new_ratings = self.calculator.calculate_new_ratings(game_info, teams)
@@ -323,9 +335,9 @@ class MultipleTeamCalculatorTests(CalculatorTests):
 
     def test_three_teams_of_one_drawn(self):
         game_info = GameInfo()
-        teams = Teams([(1, (25.0, 25.0 / 3))],
-                      [(2, (25.0, 25.0 / 3))],
-                      [(3, (25.0, 25.0 / 3))],
+        teams = Match([{1: (25.0, 25.0 / 3)},
+                       {2: (25.0, 25.0 / 3)},
+                       {3: (25.0, 25.0 / 3)}],
                       rank=[1, 1, 1])
 
         new_ratings = self.calculator.calculate_new_ratings(game_info, teams)
@@ -338,10 +350,10 @@ class MultipleTeamCalculatorTests(CalculatorTests):
 
     def test_four_teams_of_one_not_drawn(self):
         game_info = GameInfo()
-        teams = Teams([(1, (25.0, 25.0 / 3))],
-                      [(2, (25.0, 25.0 / 3))],
-                      [(3, (25.0, 25.0 / 3))],
-                      [(4, (25.0, 25.0 / 3))],
+        teams = Match([{1: (25.0, 25.0 / 3)},
+                       {2: (25.0, 25.0 / 3)},
+                       {3: (25.0, 25.0 / 3)},
+                       {4: (25.0, 25.0 / 3)}],
                       rank=[1, 2, 3, 4])
 
         new_ratings = self.calculator.calculate_new_ratings(game_info, teams)
@@ -355,11 +367,11 @@ class MultipleTeamCalculatorTests(CalculatorTests):
 
     def test_five_teams_of_one_not_drawn(self):
         game_info = GameInfo()
-        teams = Teams([(1, (25.0, 25.0 / 3))],
-                      [(2, (25.0, 25.0 / 3))],
-                      [(3, (25.0, 25.0 / 3))],
-                      [(4, (25.0, 25.0 / 3))],
-                      [(5, (25.0, 25.0 / 3))],
+        teams = Match([{1: (25.0, 25.0 / 3)},
+                       {2: (25.0, 25.0 / 3)},
+                       {3: (25.0, 25.0 / 3)},
+                       {4: (25.0, 25.0 / 3)},
+                       {5: (25.0, 25.0 / 3)}],
                       rank=[1, 2, 3, 4, 5])
 
         new_ratings = self.calculator.calculate_new_ratings(game_info, teams)
@@ -374,14 +386,14 @@ class MultipleTeamCalculatorTests(CalculatorTests):
 
     def test_eight_teams_of_one_drawn(self):
         game_info = GameInfo()
-        teams = Teams([(1, (25.0, 25.0 / 3))],
-                      [(2, (25.0, 25.0 / 3))],
-                      [(3, (25.0, 25.0 / 3))],
-                      [(4, (25.0, 25.0 / 3))],
-                      [(5, (25.0, 25.0 / 3))],
-                      [(6, (25.0, 25.0 / 3))],
-                      [(7, (25.0, 25.0 / 3))],
-                      [(8, (25.0, 25.0 / 3))],
+        teams = Match([{1: (25.0, 25.0 / 3)},
+                       {2: (25.0, 25.0 / 3)},
+                       {3: (25.0, 25.0 / 3)},
+                       {4: (25.0, 25.0 / 3)},
+                       {5: (25.0, 25.0 / 3)},
+                       {6: (25.0, 25.0 / 3)},
+                       {7: (25.0, 25.0 / 3)},
+                       {8: (25.0, 25.0 / 3)}],
                       rank=[1, 1, 1, 1, 1, 1, 1, 1])
 
         new_ratings = self.calculator.calculate_new_ratings(game_info, teams)
@@ -399,14 +411,14 @@ class MultipleTeamCalculatorTests(CalculatorTests):
 
     def test_eight_teams_of_one_upset(self):
         game_info = GameInfo()
-        teams = Teams([(1, (10.0, 8.0))],
-                      [(2, (15.0, 7.0))],
-                      [(3, (20.0, 6.0))],
-                      [(4, (25.0, 5.0))],
-                      [(5, (30.0, 4.0))],
-                      [(6, (35.0, 3.0))],
-                      [(7, (40.0, 2.0))],
-                      [(8, (45.0, 1.0))],
+        teams = Match([{1: (10.0, 8.0)},
+                       {2: (15.0, 7.0)},
+                       {3: (20.0, 6.0)},
+                       {4: (25.0, 5.0)},
+                       {5: (30.0, 4.0)},
+                       {6: (35.0, 3.0)},
+                       {7: (40.0, 2.0)},
+                       {8: (45.0, 1.0)}],
                       rank=[1, 2, 3, 4, 5, 6, 7, 8])
 
         new_ratings = self.calculator.calculate_new_ratings(game_info, teams)
@@ -424,22 +436,22 @@ class MultipleTeamCalculatorTests(CalculatorTests):
 
     def test_sixteen_teams_of_one_not_drawn(self):
         game_info = GameInfo()
-        teams = Teams([(1, (25.0, 25.0 / 3))],
-                      [(2, (25.0, 25.0 / 3))],
-                      [(3, (25.0, 25.0 / 3))],
-                      [(4, (25.0, 25.0 / 3))],
-                      [(5, (25.0, 25.0 / 3))],
-                      [(6, (25.0, 25.0 / 3))],
-                      [(7, (25.0, 25.0 / 3))],
-                      [(8, (25.0, 25.0 / 3))],
-                      [(9, (25.0, 25.0 / 3))],
-                      [(10, (25.0, 25.0 / 3))],
-                      [(11, (25.0, 25.0 / 3))],
-                      [(12, (25.0, 25.0 / 3))],
-                      [(13, (25.0, 25.0 / 3))],
-                      [(14, (25.0, 25.0 / 3))],
-                      [(15, (25.0, 25.0 / 3))],
-                      [(16, (25.0, 25.0 / 3))],
+        teams = Match([{1: (25.0, 25.0 / 3)},
+                       {2: (25.0, 25.0 / 3)},
+                       {3: (25.0, 25.0 / 3)},
+                       {4: (25.0, 25.0 / 3)},
+                       {5: (25.0, 25.0 / 3)},
+                       {6: (25.0, 25.0 / 3)},
+                       {7: (25.0, 25.0 / 3)},
+                       {8: (25.0, 25.0 / 3)},
+                       {9: (25.0, 25.0 / 3)},
+                       {10: (25.0, 25.0 / 3)},
+                       {11: (25.0, 25.0 / 3)},
+                       {12: (25.0, 25.0 / 3)},
+                       {13: (25.0, 25.0 / 3)},
+                       {14: (25.0, 25.0 / 3)},
+                       {15: (25.0, 25.0 / 3)},
+                       {16: (25.0, 25.0 / 3)}],
                       rank=list(range(16)))
 
         new_ratings = self.calculator.calculate_new_ratings(game_info, teams)
@@ -471,9 +483,10 @@ class PartialPlayCalculatorTests(CalculatorTests):
 
     def test_one_on_two_balanced_partial_play(self):
         game_info = GameInfo()
-        teams = Teams([(1, (25.0, 25.0 / 3))],
-                      [((2, 0.5), (25.0, 25.0 / 3)),
-                       ((3, 0.5), (25.0, 25.0 / 3))],
+        teams = Match([{1: (25.0, 25.0 / 3)},
+
+                       {(2, 0.5): (25.0, 25.0 / 3),
+                        (3, 0.5): (25.0, 25.0 / 3)}],
                       rank=[1, 2])
 
         new_ratings = self.calculator.calculate_new_ratings(game_info, teams)

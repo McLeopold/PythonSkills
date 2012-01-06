@@ -4,7 +4,7 @@ SQRT_2_PI = sqrt(2.0 * pi)
 LOG_SQRT_2_PI = log(sqrt(2.0 * pi))
 INV_SQRT_2 = -1.0 / sqrt(2.0)
 
-class Gaussian():
+class Gaussian(object):
     def __init__(self, mean=0.0, stdev=1.0):
         self.mean = mean
         self.stdev = stdev

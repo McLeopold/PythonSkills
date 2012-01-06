@@ -1,7 +1,7 @@
 class RatingError(Exception):
     pass
 
-class Rating():
+class Rating(object):
     '''
     Constructs a rating.
     '''
@@ -17,27 +17,6 @@ class Rating():
 
     def __str__(self):
         return "mean=%.5f" % (self.mean)
-
-    def __pow__(self, other):
-        return self.mean ** other
-
-    def __rpow__(self, other):
-        return other ** self.mean
-
-    def __div__(self, other):
-        return self.mean / other
-
-    def __add__(self, other):
-        try:
-            return Rating(self.mean + other.mean)
-        except AttributeError:
-            return self.mean + other
-
-    def __sub__(self, other):
-        try:
-            return Rating(self.mean - other.mean)
-        except AttributeError:
-            return self.mean - other
 
     @staticmethod
     def ensure_rating(rating):

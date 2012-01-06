@@ -48,8 +48,8 @@ class GaussianRating(Rating):
             if isinstance(rating, Sequence):
                 try:
                     return GaussianRating(*rating)
-                except TypeError as exc:
-                    raise RatingError("GaussianRating must be a sequence of length 2 or 3 or a Rating object")
+                except TypeError:
+                    raise RatingError("GaussianRating must be a sequence of length 2 or a GaussianRating object")
             else:
                 try:
                     return GaussianRating(rating)

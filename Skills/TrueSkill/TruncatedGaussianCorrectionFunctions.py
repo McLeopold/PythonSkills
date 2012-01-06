@@ -1,6 +1,6 @@
 from Skills.Numerics.Gaussian import Gaussian
 
-class TruncatedGaussianCorrectionFunctions():
+class TruncatedGaussianCorrectionFunctions(object):
     '''
     These functions from the bottom of page 4 of the TrueSkill paper
     '''

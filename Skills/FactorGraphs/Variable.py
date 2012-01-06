@@ -1,7 +1,7 @@
 class VariableError(Exception):
     pass
 
-class Variable():
+class Variable(object):
 
     def __init__(self, name, prior):
         self.name = "Variable[%s]" % name
