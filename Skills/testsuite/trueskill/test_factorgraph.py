@@ -2,7 +2,7 @@ import unittest
 
 from skills.trueskill import FactorGraphTrueSkillCalculator
 
-from tests.trueskill import (
+from skills.testsuite.trueskill import (
     TwoPlayerCalculatorTests,
     TwoTeamCalculatorTests,
     MultipleTeamCalculatorTests,

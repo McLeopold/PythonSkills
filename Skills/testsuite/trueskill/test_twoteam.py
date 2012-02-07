@@ -1,7 +1,7 @@
 import unittest
 from skills.trueskill import TwoTeamTrueSkillCalculator
 
-from tests.trueskill import (
+from skills.testsuite.trueskill import (
     TwoPlayerCalculatorTests,
     TwoTeamCalculatorTests,
     )

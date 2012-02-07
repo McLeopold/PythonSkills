@@ -5,9 +5,13 @@ setup(
     version='0.1.0',
     author='Scott Hamilton',
     author_email='mcleopold@gmail.com',
-    packages=['skills', 'skills.trueskill'],
+    packages=['skills',
+              'skills.trueskill',
+              'skills.testsuite',
+              'skills.testsuite.trueskill'
+    ],
     url='http://github.com/McLeopold/PythonSkills/',
-    license="LICENSE",
+    license="BSD",
     description='Implementation of the TrueSkill, Glicko'
                 ' and Elo Ranking Algorithms',
     long_description=open('README.rst').read(),
