@@ -53,14 +53,13 @@ class EloGameInfo(object):
 class EloRating(Rating):
     '''Rating that includes the K value for skill updates'''
 
-    DEFAULT_K_FACTOR = 32.0 # ICC Default
-
-    def __init__(self, mean, k_factor=DEFAULT_K_FACTOR):
+    def __init__(self, mean, k_factor=None):
         Rating.__init__(self, mean)
-        try:
-            self.k_factor = float(k_factor)
-        except ValueError:
-            ValueError("EloRating k_factor value must be numeric")
+        if k_factor is not None:
+            try:
+                self.k_factor = float(k_factor)
+            except ValueError:
+                ValueError("EloRating k_factor value must be numeric")
 
     def __repr__(self):
         return "EloRating(%s, %s)" % (self.mean, self.k_factor)
@@ -70,8 +69,7 @@ class EloRating(Rating):
 
     @staticmethod
     def ensure_rating(rating):
-        if (not hasattr(rating, 'mean') or
-                not hasattr(rating, 'k_factor')):
+        if not hasattr(rating, 'mean'):
             if isinstance(rating, Sequence):
                 try:
                     return EloRating(*rating)
@@ -89,11 +87,13 @@ class EloRating(Rating):
 class EloCalculator(Calculator):
     '''Calculator implementing the Elo algorithm'''
 
+    DEFAULT_K_FACTOR = 32.0 # ICC Default
+
     score = {WIN: 1.0,
              LOSE: 0.0,
              DRAW: 0.5}
 
-    def __init__(self, k_factor=EloRating.DEFAULT_K_FACTOR):
+    def __init__(self, k_factor=DEFAULT_K_FACTOR):
         Calculator.__init__(self, Range.exactly(2), Range.exactly(1))
         self.k_factor = k_factor
         RatingFactory.rating_class = EloRating
