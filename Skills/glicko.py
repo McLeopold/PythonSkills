@@ -15,6 +15,44 @@ from skills import (
 from skills.numerics import Range
 
 
+class GlickoGameInfo(object):
+    '''Parameters about the game used for calculating new skills'''
+
+    DEFAULT_INITIAL_MEAN = 1500.0
+    DEFAULT_BETA = 200.0
+
+    def __init__(self, initial_mean=DEFAULT_INITIAL_MEAN,
+                       beta=DEFAULT_BETA):
+
+        try:
+            self.initial_mean = float(initial_mean)
+            self.beta = float(beta)
+        except ValueError:
+            raise ValueError("GlickoGameInfo arguments must be numeric")
+
+    def default_rating(self):
+        return GlickoRating(self.initial_mean)
+
+    @staticmethod
+    def ensure_game_info(game_info):
+        if game_info is None:
+            return GlickoGameInfo()
+        elif (not hasattr(game_info, 'initial_mean') or
+                not hasattr(game_info, 'beta')):
+            if isinstance(game_info, Sequence):
+                try:
+                    return GlickoGameInfo(*game_info)
+                except TypeError:
+                    raise TypeError("game_info must be a sequence of length 0, 1 or 2 or an GlickoGameInfo object")
+            else:
+                try:
+                    return GlickoGameInfo(game_info)
+                except TypeError:
+                    raise TypeError("game_info was passed the wrong number of arguments")
+        else:
+            return game_info
+
+
 class GlickoRating(GaussianRating):
     '''Rating that includes a mean, standard deviation and last update period'''
 
@@ -63,7 +101,8 @@ class GlickoCalculator(Calculator):
         self.c_factor = c_factor
         RatingFactory.rating_class = GlickoRating
 
-    def new_ratings(self, game_info, matches, rating_period=None):
+    def new_ratings(self, matches, rating_period=None, game_info=None):
+        game_info = GlickoGameInfo.ensure_game_info(game_info)
         # get unique list of players and ensure ratings are consistant
         players = {}
         opponents = defaultdict(list)
@@ -139,12 +178,13 @@ class GlickoCalculator(Calculator):
 
         return new_ratings
 
-    def expected_score(self, game_info, self_rating, opponent_rating):
+    def expected_score(self, self_rating, opponent_rating, game_info):
         return (1.0 /
                 (1.0 + 10.0 ** ((opponent_rating - self_rating) /
                                 (2 * game_info.beta))));
 
-    def match_quality(self, game_info, teams):
+    def match_quality(self, teams, game_info=None):
+        game_info = GlickoGameInfo.ensure_game_info(game_info)
         self.validate_team_and_player_counts(teams)
 
         teams.sort()
@@ -152,7 +192,7 @@ class GlickoCalculator(Calculator):
         # The TrueSkill paper mentions that they used s1 - s2 (rating difference) to
         # determine match quality. Moser converts that to a percentage as a delta from 50%
         # using the cumulative density function of the specific curve being used
-        expected_score = self.expected_score(game_info,
-                                             teams[0].ratings()[0].mean,
-                                             teams[1].ratings()[0].mean)
+        expected_score = self.expected_score(teams[0].ratings()[0].mean,
+                                             teams[1].ratings()[0].mean,
+                                             game_info)
         return (0.5 - abs(expected_score - 0.5)) / 0.5

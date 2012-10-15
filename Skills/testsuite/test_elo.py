@@ -1,16 +1,18 @@
 import unittest
 
 from skills import (
-    GameInfo,
     Match,
     )
 
-from skills.elo import EloCalculator
+from skills.elo import (
+  EloCalculator,
+  EloGameInfo
+  )
 
 
 class CalculatorTests(object):
 
-    ERROR_TOLERANCE_TRUESKILL = 0.085
+    ERROR_TOLERANCE_RATING = 0.085
     ERROR_TOLERANCE_MATCH_QUALITY = 0.0005
 
     def assertAlmostEqual(self, first, second, places, msg, delta):
@@ -19,7 +21,7 @@ class CalculatorTests(object):
     def assertRating(self, expected_mean, actual):
         self.assertAlmostEqual(expected_mean, actual.mean, None,
                                "expected mean of %.14f, got %.14f" % (expected_mean, actual.mean),
-                               CalculatorTests.ERROR_TOLERANCE_TRUESKILL)
+                               CalculatorTests.ERROR_TOLERANCE_RATING)
 
     def assertMatchQuality(self, expected_match_quality, actual_match_quality):
         #self.assertEqual(expected_match_quality, actual_match_quality, "expected match quality of %f, got %f" % (expected_match_quality, actual_match_quality))
@@ -34,14 +36,14 @@ class EloTests(unittest.TestCase, CalculatorTests):
         self.calculator = EloCalculator()
 
     def test_one_on_one(self):
-        game_info = GameInfo()
-        teams = Match([{1: 1200},
-                       {2: 1200}],
+        game_info = EloGameInfo(1200, 200)
+        teams = Match([{1: (1200, 25)},
+                       {2: (1400, 25)}],
                       [1, 2])
-        new_ratings = self.calculator.new_ratings(game_info, teams)
-        self.assertMatchQuality(1.0, self.calculator.match_quality(game_info, teams))
-        self.assertRating(1216.0, new_ratings.rating_by_id(1))
-        self.assertRating(1184.0, new_ratings.rating_by_id(2))
+        new_ratings = self.calculator.new_ratings(teams, game_info)
+        self.assertMatchQuality(0.4805, self.calculator.match_quality(teams, game_info))
+        self.assertRating(1218.99, new_ratings.rating_by_id(1))
+        self.assertRating(1381.01, new_ratings.rating_by_id(2))
 
 
 if __name__ == "__main__":

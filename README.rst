@@ -10,7 +10,14 @@ For more details on how the algorithm works, see
 
 http://www.moserware.com/2010/03/computing-your-skill.html
 
-For details on how to use this project, see the accompanying unit tests with this project
+For details on how to use this project, see the accompanying unit tests with
+this project.  You can run the tests by running the commands::
+
+    # test all calculators
+    python -m unittest discover
+    
+    # test just the elo calculator
+    python -m unittest skills.testsuite.test_elo
 
 Calculator Objects
 ==================
@@ -23,7 +30,7 @@ Player
 ------
 
 Player is an object with a player_id (anything that is hashable) and some
-partial play info, used for TrueSkill only.::
+partial play info.  Partial play is used for TrueSkill only.::
 
     Player(1)
     
@@ -53,10 +60,10 @@ automatically.::
 Team
 ----
 
-Team is a dictionary of Player objects to Rating objects.  The objects keys
-method maps to players, values maps to ratings and items maps to player_rating.
-The constructor can take dictionary of player to ratings or a list of
-player, rating tuples to create a multi-player team.::
+Team is a dictionary of Player objects mapped to Rating objects.  The objects
+keys method maps to players, values maps to ratings and items maps to
+player_rating.  The constructor can take a dictionary of player to ratings or a
+list of player, rating tuples to create a multi-player team.::
 
     Team({1: (25.0, 8.333),
           2: (25.0, 8.333)})
