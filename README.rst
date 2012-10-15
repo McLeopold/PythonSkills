@@ -19,6 +19,7 @@ this project.  You can run the tests by running the commands::
     # test just the elo calculator
     python -m unittest skills.testsuite.test_elo
 
+
 Calculator Objects
 ==================
 
@@ -126,3 +127,4 @@ Matches:::
             rank=[1, 2]),
      Match([{Player(2): Rating(1200.0)}, {Player(3): Rating(1200.0)}],
             rank=[1, 2])]              
+
