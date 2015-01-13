@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+
 from math import sqrt, pi, log, exp
 
 try:
@@ -5,7 +7,7 @@ try:
     Matrix.determinant = lambda m: linalg.det(m)
     Matrix.inverse = lambda m: m.I
 except ImportError:
-    from matrix import Matrix
+    from .matrix import Matrix
 
 
 SQRT_2_PI = sqrt(2.0 * pi)
@@ -134,6 +136,9 @@ class Gaussian(object):
         return Gaussian.from_precision_mean(
             self.precision_mean - other.precision_mean,
             self.precision - other.precision)
+
+    # In python3, __div__ was removed in favor of __truediv__
+    __truediv__ = __div__
 
     @staticmethod
     def log_ratio_normalization(numerator, denominator):

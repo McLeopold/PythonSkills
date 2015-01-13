@@ -178,23 +178,20 @@ class Team(dict):
     def __init__(self, players=None):
         '''
         Construct a team dictionary
-        
+
         Allows for a dictionary of players to ratings
             or a list of player, rating tuples
-        
+
         Ensure players and ratings are of the proper class
         Allows for easy creation of team object using dictionaries or lists
-        
+
             # passing 1 argument assumes 1 player to rating dictionary
             team = Team({1: (mean1, stdev1), 2: (mean2, stdev2)})
             team = Team({player1: rating1, player2: rating2})
-            
+
             # or 1 list of player, rating tuples
             team = Team([(player1, rating1), (player2, rating2)])
         '''
-        self.players = self.keys
-        self.ratings = self.values
-        self.player_rating = self.items
         if players is not None:
             try:
                 player_rating_tuples = players.items()
@@ -206,6 +203,15 @@ class Team(dict):
                                     RatingFactory.ensure_rating(rating))
             except (TypeError, ValueError):
                 raise TypeError("Improper player dict or list")
+
+    def player_rating(self):
+        return list(self.items())
+
+    def ratings(self):
+        return list(self.values())
+
+    def players(self):
+        return list(self.keys())
 
     def add_player(self, player, rating):
         self[Player.ensure_player(player)] = RatingFactory.ensure_rating(rating)
@@ -234,6 +240,13 @@ class Team(dict):
             return Team(team)
         else:
             return team
+
+    def __lt__(self, other):
+        '''
+        In python3, you can't order dicts anymore. Since we do that in Match.sort
+        we'll define a custom team sort based on the current contents for consistency
+        '''
+        return frozenset(self.items()) < frozenset(other.items())
 
 
 class Rating(object):
