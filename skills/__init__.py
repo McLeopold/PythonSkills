@@ -94,7 +94,7 @@ class Match(list):
         if not self.rank:
             raise AttributeError("Match does not have a ranking")
 
-        rank_sorted, teams_sorted = map(list, zip(*sorted(zip(self.rank, self))))
+        rank_sorted, teams_sorted = map(list, zip(*sorted(zip(self.rank, self), key=lambda x: x[0])))
 
         if rank_sorted != self.rank:
             # in-place update part
@@ -204,14 +204,14 @@ class Team(dict):
             except (TypeError, ValueError):
                 raise TypeError("Improper player dict or list")
 
-    def player_rating(self):
-        return list(self.items())
+    def players(self):
+        return list(self.keys())
 
     def ratings(self):
         return list(self.values())
 
-    def players(self):
-        return list(self.keys())
+    def player_rating(self):
+        return list(self.items())
 
     def add_player(self, player, rating):
         self[Player.ensure_player(player)] = RatingFactory.ensure_rating(rating)

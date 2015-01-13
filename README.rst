@@ -10,6 +10,10 @@ For more details on how the algorithm works, see
 
 http://www.moserware.com/2010/03/computing-your-skill.html
 
+To install run the command::
+
+    pip install skills
+
 For details on how to use this project, see the accompanying unit tests with
 this project.  You can run the tests by running the commands::
 
