@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='skills',
-    version='0.2.0',
+    version='0.3.0',
     author='Scott Hamilton',
     author_email='mcleopold@gmail.com',
     packages=['skills',
@@ -15,13 +15,14 @@ setup(
     description='Implementation of the TrueSkill, Glicko'
                 ' and Elo Ranking Algorithms',
     long_description=open('README.rst').read(),
+    keywords='skill trueskill glicko elo',
     classifiers=[
         'Programming Language :: Python',
         'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 3',
         'License :: OSI Approved :: BSD License',
         'Operating System :: OS Independent',
-        'Development Status :: 4 - Beta',
+        'Development Status :: 5 - Production/Stable',
         'Environment :: Other Environment',
         'Intended Audience :: Developers',
         'Intended Audience :: Science/Research',

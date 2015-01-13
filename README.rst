@@ -14,6 +14,10 @@ To install run the command::
 
     pip install skills
 
+The match quality function of TrueSkill will run much faster with NumPy than with the provided matrix implementation.  Install with::
+
+    pip install numpy
+
 For details on how to use this project, see the accompanying unit tests with
 this project.  You can run the tests by running the commands::
 
