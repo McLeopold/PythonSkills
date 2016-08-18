@@ -146,7 +146,7 @@ class GlickoCalculator(Calculator):
             return 1.0 / (1.0 + pow(10.0, -g(RDj) * (r - rj) / 400.0))
 
         def d2_inv(g_RD, E_sr_r_RD):
-            return pow(q ** 2.0 * sum(
+            return (q ** 2.0 * sum(
                 g_RD[j] ** 2.0 * E_sr_r_RD[j] * (1.0 - E_sr_r_RD[j])
                 for j in range(len(g_RD))
             ))
