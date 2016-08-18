@@ -145,11 +145,11 @@ class GlickoCalculator(Calculator):
         def E(r, rj, RDj):
             return 1.0 / (1.0 + pow(10.0, -g(RDj) * (r - rj) / 400.0))
 
-        def d2(g_RD, E_sr_r_RD):
+        def d2_inv(g_RD, E_sr_r_RD):
             return pow(q ** 2.0 * sum(
                 g_RD[j] ** 2.0 * E_sr_r_RD[j] * (1.0 - E_sr_r_RD[j])
                 for j in range(len(g_RD))
-            ), -1.0)
+            ))
 
         new_ratings = Match()
         for player, rating in players.items():
@@ -164,7 +164,7 @@ class GlickoCalculator(Calculator):
 
             # cache value, this form used twice in the paper 
             RD2_d2 = (1.0 / player_RD[player] ** 2.0 +
-                      1.0 / d2(opponent_g_RD, opponent_E_sr_r_RD))
+                      d2_inv(opponent_g_RD, opponent_E_sr_r_RD))
 
             # new rating value
             r_new = (rating.mean + q / RD2_d2 * sum(
