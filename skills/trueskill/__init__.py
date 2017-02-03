@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+
 from math import sqrt, exp
 
 from collections import Sequence
@@ -11,21 +13,21 @@ from skills import (
     WIN,
     LOSE,
     DRAW,
-    )
+)
 
 from skills.numerics import (
     Range,
     Gaussian,
     Matrix,
     DiagonalMatrix,
-    )
+)
 
 from skills.factorgraph import (
     FactorGraph,
     VariableFactory,
     FactorList,
     ScheduleSequence,
-    )
+)
 
 from skills.trueskill.layers import (
     IteratedTeamDifferencesInnerLayer,
@@ -35,18 +37,18 @@ from skills.trueskill.layers import (
     PlayerSkillsToPerformancesLayer,
     TeamDifferencesComparisonLayer,
     TeamPerformancesToTeamPerformanceDifferencesLayer,
-    )
+)
 
 from skills.trueskill.truncated import (
     v_exceeds_margin_scaled,
     v_within_margin_scaled,
     w_exceeds_margin_scaled,
     w_within_margin_scaled,
-    )
+)
 
 
 class TrueSkillGameInfo(object):
-    '''Parameters about the game used for calculating new skills'''
+    """Parameters about the game used for calculating new skills"""
 
     DEFAULT_INITIAL_MEAN = 25.0
     DEFAULT_INITIAL_STANDARD_DEVIATION = DEFAULT_INITIAL_MEAN / 3
@@ -55,12 +57,13 @@ class TrueSkillGameInfo(object):
     DEFAULT_DRAW_PROBABILITY = 0.10
     DEFAULT_CONSERVATIVE_STANDARD_DEVIATION_MULTIPLIER = 3.0
 
-    def __init__(self, initial_mean=DEFAULT_INITIAL_MEAN,
-                       stdev=DEFAULT_INITIAL_STANDARD_DEVIATION,
-                       beta=DEFAULT_BETA,
-                       dynamics_factor=DEFAULT_DYNAMICS_FACTOR,
-                       draw_probability=DEFAULT_DRAW_PROBABILITY,
-                       conservative_stdev_multiplier=DEFAULT_CONSERVATIVE_STANDARD_DEVIATION_MULTIPLIER):
+    def __init__(self,
+            initial_mean=DEFAULT_INITIAL_MEAN,
+            stdev=DEFAULT_INITIAL_STANDARD_DEVIATION,
+            beta=DEFAULT_BETA,
+            dynamics_factor=DEFAULT_DYNAMICS_FACTOR,
+            draw_probability=DEFAULT_DRAW_PROBABILITY,
+            conservative_stdev_multiplier=DEFAULT_CONSERVATIVE_STANDARD_DEVIATION_MULTIPLIER):
 
         try:
             self.initial_mean = float(initial_mean)
@@ -101,10 +104,10 @@ class TrueSkillGameInfo(object):
 
 
 class TwoPlayerTrueSkillCalculator(Calculator):
-    '''Implements TrueSkill calculations for one-on-one games'''
+    """Implements TrueSkill calculations for one-on-one games"""
 
     score = {WIN: 1.0,
-             LOSE:-1.0,
+             LOSE: -1.0,
              DRAW: 0.0}
 
     def __init__(self):
@@ -185,13 +188,13 @@ class TwoPlayerTrueSkillCalculator(Calculator):
 
 
 class TwoTeamTrueSkillCalculator(Calculator):
-    '''
+    """
     Calculates new ratings for only two teams
     where each team has 1 or more players.
-    '''
+    """
 
     score = {WIN: 1.0,
-             LOSE:-1.0,
+             LOSE: -1.0,
              DRAW: 0.0}
 
     def __init__(self):
@@ -270,14 +273,12 @@ class TwoTeamTrueSkillCalculator(Calculator):
 
         sqrt_part = sqrt(
             (total_players * beta_squared) /
-            (total_players * beta_squared + team1stdev_squared +
-                                            team2stdev_squared)
+            (total_players * beta_squared + team1stdev_squared + team2stdev_squared)
         )
 
         exp_part = exp(
             (-1.0 * (team1mean_sum - team2mean_sum) ** 2.0) /
-            (2.0 * (total_players * beta_squared + team1stdev_squared +
-                                                   team2stdev_squared))
+            (2.0 * (total_players * beta_squared + team1stdev_squared + team2stdev_squared))
         )
 
         return exp_part * sqrt_part
@@ -354,9 +355,9 @@ class TrueSkillFactorGraph(FactorGraph):
 
 
 class FactorGraphTrueSkillCalculator(Calculator):
-    '''
+    """
     Calculates TrueSkill using a full factor graph.
-    '''
+    """
 
     def __init__(self):
         Calculator.__init__(self, Range.at_least(2), Range.at_least(1), True, True)
@@ -373,15 +374,15 @@ class FactorGraphTrueSkillCalculator(Calculator):
         factor_graph.build_graph()
         factor_graph.run_schedule()
 
-        #probability_of_outcome = factor_graph.probability_of_ranking()
+        # probability_of_outcome = factor_graph.probability_of_ranking()
 
         return factor_graph.updated_ratings()
 
     def match_quality(self, teams, game_info=None):
         game_info = TrueSkillGameInfo.ensure_game_info(game_info)
-        skills_matrix = DiagonalMatrix([rating.stdev ** 2
-                                            for team in teams
-                                                for rating in team.ratings()])
+        skills_matrix = DiagonalMatrix([
+            rating.stdev ** 2 for team in teams for rating in team.ratings()
+        ])
         mean_vector_transpose = Matrix([[rating.mean
                                  for team in teams
                                      for rating in team.ratings()]])
@@ -393,10 +394,10 @@ class FactorGraphTrueSkillCalculator(Calculator):
         beta_squared = game_info.beta ** 2
 
         start = mean_vector_transpose * player_teams_matrix
-        aTa = (beta_squared * player_teams_matrix_transpose) * player_teams_matrix
-        aTSA = (player_teams_matrix_transpose * skills_matrix) * player_teams_matrix
+        a_ta = (beta_squared * player_teams_matrix_transpose) * player_teams_matrix
+        a_tsa = (player_teams_matrix_transpose * skills_matrix) * player_teams_matrix
 
-        middle = aTa + aTSA
+        middle = a_ta + a_tsa
 
         middle_inverse = middle.inverse()
 
@@ -405,7 +406,7 @@ class FactorGraphTrueSkillCalculator(Calculator):
         exp_part_matrix = (-0.5 * ((start * middle_inverse) * end))
         exp_part = exp_part_matrix.determinant()
 
-        sqrt_part_numerator = aTa.determinant()
+        sqrt_part_numerator = a_ta.determinant()
         sqrt_part_denominator = middle.determinant()
         sqrt_part = sqrt_part_numerator / sqrt_part_denominator
 

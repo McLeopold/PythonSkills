@@ -1,10 +1,12 @@
+from __future__ import absolute_import
+
 from math import sqrt, log
 from copy import copy
 
 from skills.factorgraph import (
     Factor,
     Message,
-    )
+)
 
 from skills.numerics import Gaussian
 
@@ -13,7 +15,7 @@ from skills.trueskill.truncated import (
     v_within_margin,
     w_exceeds_margin,
     w_within_margin,
-    )
+)
 
 
 class GaussianLikelihoodFactorError(Exception):
@@ -38,9 +40,8 @@ class GaussianFactor(Factor):
         binding = Factor.create_variable_to_message_binding_with_message(
             self,
             variable,
-            Message(new_distribution,
-                    "message from %s to %s" % (self, variable))
-                                                                         )
+            Message(new_distribution, "message from {} to {}".format(self, variable))
+        )
         return binding
 
 
@@ -57,8 +58,7 @@ class GaussianGreaterThanFactor(GaussianFactor):
         message_from_variable = marginal / message
 
         return (-Gaussian.log_product_normalization(message_from_variable, message) +
-                log(Gaussian.cumulative_to((message_from_variable.mean - self.epsilon)
-                                                       / message_from_variable.stdev)))
+                log(Gaussian.cumulative_to((message_from_variable.mean - self.epsilon) / message_from_variable.stdev)))
 
     def update_message_variable(self, message, variable):
         old_marginal = copy(variable.value)
@@ -89,13 +89,11 @@ class GaussianGreaterThanFactor(GaussianFactor):
 
 
 class GaussianLikelihoodFactor(GaussianFactor):
-    '''
+    """
     Connects two variables and adds uncertainty
-    
+
     See the accompanying math paper for more details
-    '''
-
-
+    """
     def __init__(self, beta_squared, variable1, variable2):
         GaussianFactor.__init__(self, "Likelihood of %s going to %s" % (variable2, variable1))
         self.precision = 1.0 / beta_squared
@@ -140,11 +138,9 @@ class GaussianLikelihoodFactor(GaussianFactor):
 
 
 class GaussianPriorFactor(GaussianFactor):
-    '''
+    """
     Supplies the factor graph with prior information
-    '''
-
-
+    """
     def __init__(self, mean, variance, variable):
         GaussianFactor.__init__(self, "Prior value going to %s" % variable)
         self.new_message = Gaussian(mean, sqrt(variance))
@@ -166,9 +162,9 @@ class GaussianPriorFactor(GaussianFactor):
 
 
 class GaussianWeightedSumFactor(GaussianFactor):
-    '''
+    """
     Factor that sums together multiple Gaussians
-    '''
+    """
 
     def __init__(self, sum_variable, variables_to_sum, variable_weights=None):
         GaussianFactor.__init__(self, self.create_name(sum_variable, variables_to_sum, variable_weights))
@@ -223,7 +219,6 @@ class GaussianWeightedSumFactor(GaussianFactor):
             local_current_variable = current_variable
             self.create_variable_to_message_binding(local_current_variable)
 
-
     def log_normalization(self):
         result = 0.0
         for i in range(1, len(self.variables)):
@@ -252,10 +247,10 @@ class GaussianWeightedSumFactor(GaussianFactor):
             another_weighted_mean_sum += weights[i] * diff.precision_mean / diff.precision
 
         new_precision = 1.0 / inverse_of_new_precision_sum
-        #another_new_precision = 1.0 / another_inverse_of_new_precision_sum
+        # another_new_precision = 1.0 / another_inverse_of_new_precision_sum
 
         new_precision_mean = new_precision * weighted_mean_sum
-        #another_new_precision_mean = another_new_precision * another_weighted_mean_sum
+        # another_new_precision_mean = another_new_precision * another_weighted_mean_sum
 
         new_message = Gaussian.from_precision_mean(new_precision_mean, new_precision)
         old_marginal_without_message = marginal0 / message0
@@ -315,9 +310,9 @@ class GaussianWeightedSumFactor(GaussianFactor):
 
 
 class GaussianWithinFactor(GaussianFactor):
-    '''
+    """
     Factor representing a team difference that has not exceeded the draw margin
-    '''
+    """
 
     def __init__(self, epsilon, variable):
         GaussianFactor.__init__(self, "%s <= %.2f" % (variable, epsilon))

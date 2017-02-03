@@ -1,11 +1,13 @@
+from __future__ import absolute_import
+
 from math import sqrt, pi, log, exp
 
 try:
-    from numpy import matrix as Matrix, linalg
+    from numpy import matrix as Matrix, linalg  # flake8: noqa
     Matrix.determinant = lambda m: linalg.det(m)
     Matrix.inverse = lambda m: m.I
 except ImportError:
-    from matrix import Matrix
+    from .matrix import Matrix
 
 
 SQRT_2_PI = sqrt(2.0 * pi)

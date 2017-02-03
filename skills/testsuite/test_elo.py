@@ -1,13 +1,13 @@
 import unittest
 
 from skills import (
-    Match,
-    )
+  Match,
+)
 
 from skills.elo import (
   EloCalculator,
   EloGameInfo
-  )
+)
 
 
 class CalculatorTests(object):
@@ -24,7 +24,7 @@ class CalculatorTests(object):
                                CalculatorTests.ERROR_TOLERANCE_RATING)
 
     def assertMatchQuality(self, expected_match_quality, actual_match_quality):
-        #self.assertEqual(expected_match_quality, actual_match_quality, "expected match quality of %f, got %f" % (expected_match_quality, actual_match_quality))
+        # self.assertEqual(expected_match_quality, actual_match_quality, "expected match quality of %f, got %f" % (expected_match_quality, actual_match_quality))
         self.assertAlmostEqual(expected_match_quality, actual_match_quality, None,
                                "expected match quality of %.15f, got %.15f" % (expected_match_quality, actual_match_quality),
                                CalculatorTests.ERROR_TOLERANCE_MATCH_QUALITY)

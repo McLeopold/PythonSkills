@@ -4,7 +4,7 @@ from skills.trueskill import TwoTeamTrueSkillCalculator
 from skills.testsuite.trueskill import (
     TwoPlayerCalculatorTests,
     TwoTeamCalculatorTests,
-    )
+)
 
 
 class TwoTeamTrueSkillCalculatorTest(unittest.TestCase, TwoPlayerCalculatorTests, TwoTeamCalculatorTests):

@@ -1,6 +1,6 @@
 from skills import (
     Match,
-    )
+)
 
 from skills.trueskill import TrueSkillGameInfo
 
@@ -27,7 +27,7 @@ class CalculatorTests(object):
                                CalculatorTests.ERROR_TOLERANCE_TRUESKILL)
 
     def assertMatchQuality(self, expected_match_quality, actual_match_quality):
-        #self.assertEqual(expected_match_quality, actual_match_quality, "expected match quality of %f, got %f" % (expected_match_quality, actual_match_quality))
+        # self.assertEqual(expected_match_quality, actual_match_quality, "expected match quality of %f, got %f" % (expected_match_quality, actual_match_quality))
         self.assertAlmostEqual(expected_match_quality, actual_match_quality, None,
                                "expected match quality of %.15f, got %.15f" % (expected_match_quality, actual_match_quality),
                                CalculatorTests.ERROR_TOLERANCE_MATCH_QUALITY)

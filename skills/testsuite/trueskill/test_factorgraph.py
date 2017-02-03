@@ -7,7 +7,7 @@ from skills.testsuite.trueskill import (
     TwoTeamCalculatorTests,
     MultipleTeamCalculatorTests,
     PartialPlayCalculatorTests,
-    )
+)
 
 
 class FactorGraphTrueSkillCalculatorTest(unittest.TestCase,

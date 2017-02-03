@@ -37,14 +37,14 @@ class GaussianDistributionTest(unittest.TestCase):
         m6s7 = Gaussian(6, 7)
         product2 = m4s5 * m6s7
 
-        expectedMean = (4.0 * 7.0 ** 2 + 6.0 * 5.0 ** 2) / (5.0 ** 2 + 7.0 ** 2)
-        self.assertAlmostEqual(expectedMean, product2.mean, None,
-                               "testMultiplication mean2 expected %.15f, got %.15f" % (expectedMean, product2.mean),
+        expected_mean = (4.0 * 7.0 ** 2 + 6.0 * 5.0 ** 2) / (5.0 ** 2 + 7.0 ** 2)
+        self.assertAlmostEqual(expected_mean, product2.mean, None,
+                               "testMultiplication mean2 expected %.15f, got %.15f" % (expected_mean, product2.mean),
                                GaussianDistributionTest.ERROR_TOLERANCE)
 
-        expectedSigma = sqrt((5.0 ** 2 * 7.0 ** 2) / (5.0 ** 2 + 7.0 ** 2))
-        self.assertAlmostEqual(expectedSigma, product2.stdev, None,
-                               "testMultiplication stdev2 expected %.15f, got %.15f" % (expectedSigma, product2.stdev),
+        expected_sigma = sqrt((5.0 ** 2 * 7.0 ** 2) / (5.0 ** 2 + 7.0 ** 2))
+        self.assertAlmostEqual(expected_sigma, product2.stdev, None,
+                               "testMultiplication stdev2 expected %.15f, got %.15f" % (expected_sigma, product2.stdev),
                                GaussianDistributionTest.ERROR_TOLERANCE)
 
     def testDivision(self):

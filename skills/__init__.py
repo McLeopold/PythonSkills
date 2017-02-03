@@ -1,6 +1,6 @@
 """Ranking calculators implementing the Elo, Glicko and TrueSkill algorithms."""
+from __future__ import absolute_import
 
-from math import sqrt
 from collections import Sequence
 from skills.numerics import Gaussian
 
@@ -11,7 +11,7 @@ LOSE = 2
 
 
 class Calculator(object):
-    '''Base class for all skill calculator implementations.'''
+    """Base class for all skill calculator implementations."""
 
     def __init__(self, total_teams_allowed, players_per_team_allowed,
                  allow_partial_play=False, allow_partial_update=False):
@@ -37,7 +37,7 @@ class Calculator(object):
 
 
 class Match(list):
-    '''Match is a list of Team objects'''
+    """Match is a list of Team objects"""
 
     def __init__(self, teams=None, rank=None):
         if teams is not None:
@@ -88,9 +88,9 @@ class Match(list):
                 yield player_rating
 
     def sort(self):
-        '''
+        """
         Performs an in-place sort of the items in accordance to the ranks in non-decreasing order
-        '''
+        """
         if not self.rank:
             raise AttributeError("Match does not have a ranking")
 
@@ -123,7 +123,7 @@ class Match(list):
 
 
 class Matches(list):
-    '''Matches is a list of Match objects'''
+    """Matches is a list of Match objects"""
 
     def __init__(self, matches):
         for match in matches:
@@ -131,14 +131,15 @@ class Matches(list):
 
 
 class Player(object):
-    '''Player object contains a player id and parital play information'''
+    """Player object contains a player id and parital play information"""
 
     DEFAULT_PARTIAL_PLAY_PERCENTAGE = 1.0
     DEFAULT_PARTIAL_UPDATE_PERCENTAGE = 1.0
 
-    def __init__(self, player_id=None,
-                       partial_play_percentage=DEFAULT_PARTIAL_PLAY_PERCENTAGE,
-                       partial_update_percentage=DEFAULT_PARTIAL_UPDATE_PERCENTAGE):
+    def __init__(self,
+            player_id=None,
+            partial_play_percentage=DEFAULT_PARTIAL_PLAY_PERCENTAGE,
+            partial_update_percentage=DEFAULT_PARTIAL_UPDATE_PERCENTAGE):
         if not (0.0001 <= partial_play_percentage <= 1.0):
             raise ValueError("partial_player_percentage is not in the range [0.0001, 1.0]")
         if not (0.0 <= partial_update_percentage <= 1.0):
@@ -154,6 +155,7 @@ class Player(object):
             return "Player(%s, %s, %s)" % (self.player_id, self.partial_play_percentage, self.partial_update_percentage)
         else:
             return "Player(%s)" % self.player_id
+
     def __str__(self):
         return str(self.player_id)
 
@@ -171,27 +173,27 @@ class Player(object):
 
 
 class Team(dict):
-    '''
+    """
     Team maps player objects to rating objects
-    '''
+    """
 
     def __init__(self, players=None):
-        '''
+        """
         Construct a team dictionary
-        
+
         Allows for a dictionary of players to ratings
             or a list of player, rating tuples
-        
+
         Ensure players and ratings are of the proper class
         Allows for easy creation of team object using dictionaries or lists
-        
+
             # passing 1 argument assumes 1 player to rating dictionary
             team = Team({1: (mean1, stdev1), 2: (mean2, stdev2)})
             team = Team({player1: rating1, player2: rating2})
-            
+
             # or 1 list of player, rating tuples
             team = Team([(player1, rating1), (player2, rating2)])
-        '''
+        """
         self.players = self.keys
         self.ratings = self.values
         self.player_rating = self.items
@@ -237,9 +239,9 @@ class Team(dict):
 
 
 class Rating(object):
-    '''
+    """
     Rating contains just a value
-    '''
+    """
 
     def __init__(self, mean):
         try:
@@ -265,15 +267,15 @@ class Rating(object):
 
 
 class RatingFactory(object):
-    '''
+    """
     Factory to generation the correct rating type depending on the calculator
-    
+
     Creating an instance of a calculator will set this automatically
-    '''
+    """
 
     rating_class = Rating
 
-    def __new__(self):
+    def __new__(cls):
         return RatingFactory.rating_class()
 
     @staticmethod
@@ -282,7 +284,7 @@ class RatingFactory(object):
 
 
 class GaussianRating(Rating):
-    '''Rating that includes a mean and standard deviation'''
+    """Rating that includes a mean and standard deviation"""
 
     rating_class = None
 

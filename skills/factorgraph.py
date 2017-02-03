@@ -1,3 +1,6 @@
+from __future__ import absolute_import
+
+
 class Factor(object):
 
     def __init__(self, name):
@@ -80,9 +83,9 @@ class FactorGraphLayer(object):
 
 
 class FactorList(list):
-    '''
+    """
     Helper class for computing the factor graph's normalization constant
-    '''
+    """
 
     def log_normalization(self):
         for current_factor in self:
@@ -118,7 +121,7 @@ class Schedule(object):
     def __str__(self):
         return self.name
 
-    def visit(self, depth= -1, max_depth=0):
+    def visit(self, depth=-1, max_depth=0):
         raise NotImplementedError
 
 
@@ -129,7 +132,7 @@ class ScheduleStep(Schedule):
         self.factor = factor
         self.index = index
 
-    def visit(self, depth= -1, max_depth=0):
+    def visit(self, depth=-1, max_depth=0):
         delta = self.factor.update_message_index(self.index)
         return delta
 
@@ -140,7 +143,7 @@ class ScheduleSequence(Schedule):
         Schedule.__init__(self, name)
         self.schedules = schedules
 
-    def visit(self, depth= -1, max_depth=0):
+    def visit(self, depth=-1, max_depth=0):
         max_delta = 0
         for schedule in self.schedules:
             current_visit = schedule.visit(depth + 1, max_depth)
@@ -155,7 +158,7 @@ class ScheduleLoop(Schedule):
         self.schedule_to_loop = schedule_to_loop
         self.max_delta = max_delta
 
-    def visit(self, depth= -1, max_depth=0):
+    def visit(self, depth=-1, max_depth=0):
         total_iterations = 1
         delta = self.schedule_to_loop.visit(depth + 1, max_depth)
         while delta > self.max_delta:

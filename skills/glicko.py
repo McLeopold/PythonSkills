@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+
 from collections import Sequence, defaultdict
 from math import sqrt, log, pi
 
@@ -10,19 +12,18 @@ from skills import (
     WIN,
     LOSE,
     DRAW,
-    )
+)
 
 from skills.numerics import Range
 
 
 class GlickoGameInfo(object):
-    '''Parameters about the game used for calculating new skills'''
+    """Parameters about the game used for calculating new skills"""
 
     DEFAULT_INITIAL_MEAN = 1500.0
     DEFAULT_BETA = 200.0
 
-    def __init__(self, initial_mean=DEFAULT_INITIAL_MEAN,
-                       beta=DEFAULT_BETA):
+    def __init__(self, initial_mean=DEFAULT_INITIAL_MEAN, beta=DEFAULT_BETA):
 
         try:
             self.initial_mean = float(initial_mean)
@@ -54,7 +55,7 @@ class GlickoGameInfo(object):
 
 
 class GlickoRating(GaussianRating):
-    '''Rating that includes a mean, standard deviation and last update period'''
+    """Rating that includes a mean, standard deviation and last update period"""
 
     def __init__(self, mean, stdev, last_rating_period=None):
         GaussianRating.__init__(self, mean, stdev)
@@ -86,11 +87,11 @@ class GlickoRating(GaussianRating):
 
 
 class GlickoCalculator(Calculator):
-    '''
+    """
     Implements Glicko calculator
-    
+
     See http://www.glicko.net/research/gdescrip.pdf for details
-    '''
+    """
 
     score = {WIN: 1.0,
              LOSE: 0.0,
@@ -106,7 +107,7 @@ class GlickoCalculator(Calculator):
         # get unique list of players and ensure ratings are consistant
         players = {}
         opponents = defaultdict(list)
-        player_RD = {}
+        player_rd = {}
 
         # Step 1: calculate r and RD for onset of rating period
         # also cache values of g(RDj) and E(s|r, rj, RDj) for each player
@@ -122,12 +123,12 @@ class GlickoCalculator(Calculator):
                     if (self.c_factor is None or
                             rating.last_rating_period is None or
                             rating_period is None):
-                        player_RD[player] = rating.stdev
+                        player_rd[player] = rating.stdev
                     else:
                         t = rating_period - rating.last_rating_period
                         if t <= 0:
                             raise ValueError("Player %s has a last_rating_period equal to the current rating_period" % (player))
-                        player_RD[player] = min(game_info.beta, sqrt(rating.stdev ** 2 + self.c_factor * t))
+                        player_rd[player] = min(game_info.beta, sqrt(rating.stdev ** 2 + self.c_factor * t))
                     players[player] = rating
 
             # create opponent lists of players and outcomes
@@ -136,52 +137,52 @@ class GlickoCalculator(Calculator):
             opponents[player1].append((player2, GlickoCalculator.score[match.comparison(0, 1)]))
             opponents[player2].append((player1, GlickoCalculator.score[match.comparison(1, 0)]))
 
-
         # Step 2: carry out the update calculations for each player separately
         q = log(10.0) / 400.0
-        def g(RD):
-            return 1.0 / sqrt(1.0 + 3.0 * q ** 2.0 * (RD ** 2.0) / pi ** 2.0)
 
-        def E(r, rj, RDj):
-            return 1.0 / (1.0 + pow(10.0, -g(RDj) * (r - rj) / 400.0))
+        def g(rd):
+            return 1.0 / sqrt(1.0 + 3.0 * q ** 2.0 * (rd ** 2.0) / pi ** 2.0)
 
-        def d2(g_RD, E_sr_r_RD):
+        def E(r, rj, rd_j):
+            return 1.0 / (1.0 + pow(10.0, -g(rd_j) * (r - rj) / 400.0))
+
+        def d2(g_rd, e_sr_r_rd):
             return pow(q ** 2.0 * sum(
-                g_RD[j] ** 2.0 * E_sr_r_RD[j] * (1.0 - E_sr_r_RD[j])
-                for j in range(len(g_RD))
+                g_rd[j] ** 2.0 * e_sr_r_rd[j] * (1.0 - e_sr_r_rd[j])
+                for j in range(len(g_rd))
             ), -1.0)
 
         new_ratings = Match()
         for player, rating in players.items():
             # cache values of g(RDj) and E(s|r, r, RDj) for each opponent
-            opponent_g_RD = []
-            opponent_E_sr_r_RD = []
+            opponent_g_rd = []
+            opponent_e_sr_r_rd = []
             opponent_s = []
             for opponent, score in opponents[player]:
-                opponent_g_RD.append(g(player_RD[opponent]))
-                opponent_E_sr_r_RD.append(E(rating.mean, players[opponent].mean, player_RD[opponent]))
+                opponent_g_rd.append(g(player_rd[opponent]))
+                opponent_e_sr_r_rd.append(E(rating.mean, players[opponent].mean, player_rd[opponent]))
                 opponent_s.append(score)
 
-            # cache value, this form used twice in the paper 
-            RD2_d2 = (1.0 / player_RD[player] ** 2.0 +
-                      1.0 / d2(opponent_g_RD, opponent_E_sr_r_RD))
+            # cache value, this form used twice in the paper
+            rd2_d2 = (1.0 / player_rd[player] ** 2.0 +
+                      1.0 / d2(opponent_g_rd, opponent_e_sr_r_rd))
 
             # new rating value
-            r_new = (rating.mean + q / RD2_d2 * sum(
-                opponent_g_RD[j] * (opponent_s[j] - opponent_E_sr_r_RD[j])
+            r_new = (rating.mean + q / rd2_d2 * sum(
+                opponent_g_rd[j] * (opponent_s[j] - opponent_e_sr_r_rd[j])
                 for j in range(len(opponent_s))
             ))
             # new rating deviation value
-            RD_new = sqrt(pow(RD2_d2, -1))
+            rd_new = sqrt(pow(rd2_d2, -1))
 
-            new_ratings.append(Team({player: GlickoRating(r_new, RD_new, rating_period)}))
+            new_ratings.append(Team({player: GlickoRating(r_new, rd_new, rating_period)}))
 
         return new_ratings
 
     def expected_score(self, self_rating, opponent_rating, game_info):
         return (1.0 /
                 (1.0 + 10.0 ** ((opponent_rating - self_rating) /
-                                (2 * game_info.beta))));
+                                (2 * game_info.beta))))
 
     def match_quality(self, teams, game_info=None):
         game_info = GlickoGameInfo.ensure_game_info(game_info)

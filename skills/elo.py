@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+
 from collections import Sequence
 
 from skills import (
@@ -9,18 +11,18 @@ from skills import (
     WIN,
     LOSE,
     DRAW,
-    )
+)
 
 from skills.numerics import Range
 
+
 class EloGameInfo(object):
-    '''Parameters about the game used for calculating new skills'''
+    """Parameters about the game used for calculating new skills"""
 
     DEFAULT_INITIAL_MEAN = 1500.0
     DEFAULT_BETA = 200.0
 
-    def __init__(self, initial_mean=DEFAULT_INITIAL_MEAN,
-                       beta=DEFAULT_BETA):
+    def __init__(self, initial_mean=DEFAULT_INITIAL_MEAN, beta=DEFAULT_BETA):
 
         try:
             self.initial_mean = float(initial_mean)
@@ -50,8 +52,9 @@ class EloGameInfo(object):
         else:
             return game_info
 
+
 class EloRating(Rating):
-    '''Rating that includes the K value for skill updates'''
+    """Rating that includes the K value for skill updates"""
 
     def __init__(self, mean, k_factor=None):
         Rating.__init__(self, mean)
@@ -85,9 +88,9 @@ class EloRating(Rating):
 
 
 class EloCalculator(Calculator):
-    '''Calculator implementing the Elo algorithm'''
+    """Calculator implementing the Elo algorithm"""
 
-    DEFAULT_K_FACTOR = 32.0 # ICC Default
+    DEFAULT_K_FACTOR = 32.0  # ICC Default
 
     score = {WIN: 1.0,
              LOSE: 0.0,
@@ -133,10 +136,10 @@ class EloCalculator(Calculator):
     def expected_score(self, self_rating, opponent_rating, game_info):
         return (1.0 /
                 (1.0 + 10.0 ** ((opponent_rating - self_rating) /
-                                (2 * game_info.beta))));
+                                (2 * game_info.beta))))
 
     def match_quality(self, teams, game_info=None):
-        game_info = EloGameInfo.ensure_game_info(game_info)        
+        game_info = EloGameInfo.ensure_game_info(game_info)
         self.validate_team_and_player_counts(teams)
 
         teams.sort()

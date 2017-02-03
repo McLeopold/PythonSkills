@@ -1,15 +1,15 @@
 import unittest
 
 from skills import (
-    Match,
-    Matches,
-    Team,
-    )
+  Match,
+  Matches,
+  Team,
+)
 
 from skills.glicko import (
   GlickoCalculator,
   GlickoGameInfo
-  )
+)
 
 
 class CalculatorTests(object):
@@ -29,7 +29,7 @@ class CalculatorTests(object):
                                CalculatorTests.ERROR_TOLERANCE_RATING)
 
     def assertMatchQuality(self, expected_match_quality, actual_match_quality):
-        #self.assertEqual(expected_match_quality, actual_match_quality, "expected match quality of %f, got %f" % (expected_match_quality, actual_match_quality))
+        # self.assertEqual(expected_match_quality, actual_match_quality, "expected match quality of %f, got %f" % (expected_match_quality, actual_match_quality))
         self.assertAlmostEqual(expected_match_quality, actual_match_quality, None,
                                "expected match quality of %.15f, got %.15f" % (expected_match_quality, actual_match_quality),
                                CalculatorTests.ERROR_TOLERANCE_MATCH_QUALITY)
@@ -50,7 +50,7 @@ class GlickoTests(unittest.TestCase, CalculatorTests):
                            Match([player1, player3], [2, 1]),
                            Match([player1, player4], [2, 1])])
         new_ratings = self.calculator.new_ratings(matches, 1, game_info)
-        #self.assertMatchQuality(1.0, self.calculator.calculate_match_quality(matches, game_info))
+        # self.assertMatchQuality(1.0, self.calculator.calculate_match_quality(matches, game_info))
         self.assertRating(1464.1, 151.4, new_ratings.rating_by_id(1))
 
 

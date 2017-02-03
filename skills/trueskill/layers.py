@@ -1,9 +1,11 @@
+from __future__ import absolute_import
+
 from skills.factorgraph import (
     FactorGraphLayer,
     ScheduleLoop,
     ScheduleSequence,
     ScheduleStep,
-    )
+)
 
 from skills.trueskill.factors import (
     GaussianGreaterThanFactor,
@@ -11,7 +13,7 @@ from skills.trueskill.factors import (
     GaussianPriorFactor,
     GaussianWeightedSumFactor,
     GaussianWithinFactor,
-    )
+)
 
 
 class IteratedTeamDifferencesInnerLayerError(Exception):
@@ -52,7 +54,7 @@ class IteratedTeamDifferencesInnerLayer(TrueSkillFactorGraphLayer):
             raise IteratedTeamDifferencesInnerLayerError("IteratedTeamDefferencesInnerLayer must have more than 1 input variables groups")
 
         total_team_differences = len(self.team_performances_to_team_performance_differences.local_factors())
-        #total_teams = total_team_differences + 1
+        # total_teams = total_team_differences + 1
 
         local_factors = self.team_performances_to_team_performance_differences.local_factors()
 
@@ -125,16 +127,13 @@ class IteratedTeamDifferencesInnerLayer(TrueSkillFactorGraphLayer):
                 [
                  ScheduleStep(
                     "team_performance_to_performance_difference_factors[total_team_differences - 1 - %d] @ 0" % i,
-                    differences_factor, 0
-                ),
+                    differences_factor, 0),
                  ScheduleStep(
                     "greater_than_or_within_result_factors[total_team_differences - 1 - %d] @ 0" % i,
-                    comparison_factor, 0
-                ),
+                    comparison_factor, 0),
                  ScheduleStep(
                     "team_performance_to_performance_difference_factors[total_team_differences - 1 - %d] @ 1" % i,
-                    performances_to_differences_factor, 1
-                )
+                    performances_to_differences_factor, 1)
                 ]
             )
             backward_schedule_list.append(current_backward_schedule_piece)
@@ -286,7 +285,7 @@ class TeamPerformancesToTeamPerformanceDifferencesLayer(TrueSkillFactorGraphLaye
             stronger_team = self.input_variables_groups[i][0]
             weaker_team = self.input_variables_groups[i + 1][0]
 
-            current_difference = self.create_output_variable();
+            current_difference = self.create_output_variable()
             new_differences_factor = self.create_team_performance_to_difference_factor(
                 stronger_team,
                 weaker_team,
@@ -303,4 +302,3 @@ class TeamPerformancesToTeamPerformanceDifferencesLayer(TrueSkillFactorGraphLaye
     def create_output_variable(self):
         return self.parent_factor_graph.variable_factory.create_basic_variable(
             "Team performance difference")
-
