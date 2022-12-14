@@ -17,7 +17,7 @@ class Matrix(list):
             self.append(row[:])
 
     def transpose(self):
-        return Matrix(map(lambda * row: list(row), *self))
+        return Matrix(list(map(lambda * row: list(row), *self)))
 
     def is_square(self):
         return self.shape[0] == self.shape[1] and self.shape[0] > 0

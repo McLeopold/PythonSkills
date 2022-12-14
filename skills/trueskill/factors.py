@@ -1,5 +1,4 @@
-from __future__ import absolute_import
-
+from __future__ import division
 from math import sqrt, log
 from copy import copy
 
@@ -173,7 +172,7 @@ class GaussianWeightedSumFactor(GaussianFactor):
 
         # the first weights are a straightforward copy
         self.weights.append(variable_weights[:])
-        self.weights_squared.append(map(lambda x: x ** 2, variable_weights))
+        self.weights_squared.append(list(map(lambda x: x ** 2, variable_weights)))
 
         # 0..n-1
         self.variable_index_orders_for_weights = [list(range(len(variables_to_sum) + 1))]

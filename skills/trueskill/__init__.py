@@ -78,7 +78,7 @@ class TrueSkillGameInfo(object):
             raise ValueError("TrueSkillGameInfo arguments must be numeric")
 
     def default_rating(self):
-        return Rating(self.initial_mean, self.initial_stdev)
+        return GaussianRating(self.initial_mean, self.initial_stdev)
 
     @staticmethod
     def ensure_game_info(game_info):

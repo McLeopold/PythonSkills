@@ -94,7 +94,7 @@ class Match(list):
         if not self.rank:
             raise AttributeError("Match does not have a ranking")
 
-        rank_sorted, teams_sorted = map(list, zip(*sorted(zip(self.rank, self))))
+        rank_sorted, teams_sorted = map(list, zip(*sorted(zip(self.rank, self), key=lambda x: x[0])))
 
         if rank_sorted != self.rank:
             # in-place update part
@@ -193,10 +193,7 @@ class Team(dict):
 
             # or 1 list of player, rating tuples
             team = Team([(player1, rating1), (player2, rating2)])
-        """
-        self.players = self.keys
-        self.ratings = self.values
-        self.player_rating = self.items
+        '''
         if players is not None:
             try:
                 player_rating_tuples = players.items()
@@ -208,6 +205,15 @@ class Team(dict):
                                     RatingFactory.ensure_rating(rating))
             except (TypeError, ValueError):
                 raise TypeError("Improper player dict or list")
+
+    def players(self):
+        return list(self.keys())
+
+    def ratings(self):
+        return list(self.values())
+
+    def player_rating(self):
+        return list(self.items())
 
     def add_player(self, player, rating):
         self[Player.ensure_player(player)] = RatingFactory.ensure_rating(rating)
@@ -236,6 +242,13 @@ class Team(dict):
             return Team(team)
         else:
             return team
+
+    def __lt__(self, other):
+        '''
+        In python3, you can't order dicts anymore. Since we do that in Match.sort
+        we'll define a custom team sort based on the current contents for consistency
+        '''
+        return frozenset(self.items()) < frozenset(other.items())
 
 
 class Rating(object):

@@ -1,5 +1,4 @@
-from __future__ import absolute_import
-
+from __future__ import division, absolute_import
 from math import sqrt, pi, log, exp
 
 try:
@@ -132,7 +131,7 @@ class Gaussian(object):
 
         return -LOG_SQRT_2_PI - (log(variance_sum) / 2.0) - ((mean_difference ** 2.0) / (2.0 * variance_sum))
 
-    def __div__(self, other):
+    def __truediv__(self, other):
         return Gaussian.from_precision_mean(
             self.precision_mean - other.precision_mean,
             self.precision - other.precision)
