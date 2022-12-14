@@ -1,7 +1,6 @@
 """Ranking calculators implementing the Elo, Glicko and TrueSkill algorithms."""
-from __future__ import absolute_import
+from collections.abc import Sequence
 
-from collections import Sequence
 from skills.numerics import Gaussian
 
 
@@ -40,6 +39,7 @@ class Match(list):
     """Match is a list of Team objects"""
 
     def __init__(self, teams=None, rank=None):
+        super().__init__()
         if teams is not None:
             for team in teams:
                 self.append(Team.ensure_team(team))
@@ -87,7 +87,7 @@ class Match(list):
             for player_rating in team.player_rating():
                 yield player_rating
 
-    def sort(self):
+    def sort(self, **kwargs):
         """
         Performs an in-place sort of the items in accordance to the ranks in non-decreasing order
         """
@@ -126,6 +126,7 @@ class Matches(list):
     """Matches is a list of Match objects"""
 
     def __init__(self, matches):
+        super().__init__()
         for match in matches:
             self.append(Match.ensure_match(match))
 
@@ -193,7 +194,8 @@ class Team(dict):
 
             # or 1 list of player, rating tuples
             team = Team([(player1, rating1), (player2, rating2)])
-        '''
+        """
+        super().__init__()
         if players is not None:
             try:
                 player_rating_tuples = players.items()
@@ -244,10 +246,10 @@ class Team(dict):
             return team
 
     def __lt__(self, other):
-        '''
+        """
         In python3, you can't order dicts anymore. Since we do that in Match.sort
         we'll define a custom team sort based on the current contents for consistency
-        '''
+        """
         return frozenset(self.items()) < frozenset(other.items())
 
 
@@ -263,14 +265,14 @@ class Rating(object):
             raise ValueError("Rating mean value must be numeric")
 
     def __repr__(self):
-        return "Rating(%s)" % (self.mean)
+        return "Rating(%s)" % self.mean
 
     def __str__(self):
-        return "mean=%.5f" % (self.mean)
+        return "mean=%.5f" % self.mean
 
     @staticmethod
     def ensure_rating(rating):
-        if (not hasattr(rating, 'mean')):
+        if not hasattr(rating, 'mean'):
             try:
                 return Rating(rating)
             except TypeError:
@@ -288,8 +290,9 @@ class RatingFactory(object):
 
     rating_class = Rating
 
-    def __new__(cls):
-        return RatingFactory.rating_class()
+    # def __new__(cls):
+    #     TODO: Rating ctor requires a param
+    #     return RatingFactory.rating_class()
 
     @staticmethod
     def ensure_rating(rating):

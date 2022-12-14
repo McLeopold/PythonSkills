@@ -1,6 +1,3 @@
-from __future__ import absolute_import
-
-
 class Factor(object):
 
     def __init__(self, name):

@@ -1,6 +1,5 @@
-from __future__ import absolute_import
-
-from collections import Sequence, defaultdict
+from collections import defaultdict
+from collections.abc import Sequence
 from math import sqrt, log, pi
 
 from skills import (

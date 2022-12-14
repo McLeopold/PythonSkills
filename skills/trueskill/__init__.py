@@ -1,8 +1,6 @@
-from __future__ import absolute_import
-
 from math import sqrt, exp
 
-from collections import Sequence
+from collections.abc import Sequence
 
 from skills import (
     Calculator,

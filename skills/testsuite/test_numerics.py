@@ -1,4 +1,3 @@
-from __future__ import division
 import unittest
 from skills.numerics import Gaussian
 from math import sqrt

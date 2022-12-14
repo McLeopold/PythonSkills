@@ -1,6 +1,3 @@
-from __future__ import absolute_import
-
-
 class MatrixError(Exception):
     pass
 
@@ -10,6 +7,7 @@ class Matrix(list):
     ERROR_TOLERANCE = 0.00000000000001
 
     def __init__(self, data):
+        super().__init__()
         rows = len(data)
         cols = len(data[0]) if rows > 0 else 0
         self.shape = rows, cols

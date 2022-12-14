@@ -2,8 +2,6 @@
 Truncated gaussian correction functions
 from the bottom of page 4 of the TrueSkill paper
 """
-from __future__ import absolute_import
-
 from skills.numerics import Gaussian
 
 
@@ -13,7 +11,7 @@ def v_exceeds_margin_scaled(team_performance_difference, draw_margin, c):
 
 def v_exceeds_margin(team_performance_difference, draw_margin):
     denominator = Gaussian.cumulative_to(team_performance_difference - draw_margin)
-    if (denominator < 2.22275874e-162):
+    if denominator < 2.22275874e-162:
         return -team_performance_difference + draw_margin
     return Gaussian.at(team_performance_difference - draw_margin) / denominator
 
